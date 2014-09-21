@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" output="target/classes" path="src/main/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path="src/resources"/>
+	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="lib/frmall.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/morena7_osx.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/morena7_win.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/morena7.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/morena7-sk.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jai_codec.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jai_imageio-1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jid.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cmaps.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cmyk-profiles.jar"/>
+	<classpathentry kind="output" path="target/classes"/>
+</classpath>
