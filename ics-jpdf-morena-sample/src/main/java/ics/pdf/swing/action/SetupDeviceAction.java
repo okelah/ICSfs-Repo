@@ -21,7 +21,7 @@ import eu.gnome.morena.TransferListener;
 
 public class SetupDeviceAction extends AbstractAction implements TransferListener {
     private static final long serialVersionUID = 1L;
-    static Logger log = LogManager.getLogger(SetupDeviceAction.class.getName());
+    private static Logger log = LogManager.getLogger(SetupDeviceAction.class.getName());
 
     private Scanner scanner = null;
     private Manager manager = null;
@@ -76,7 +76,9 @@ public class SetupDeviceAction extends AbstractAction implements TransferListene
             return null;
         }
         Device device = manager.selectDevice(parent);
-        getInstance().setProperty("device", device.toString());
+        if (device != null) {
+            getInstance().setProperty("device", device.toString());
+        }
         return device;
     }
 

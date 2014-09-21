@@ -10,6 +10,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.qoppa.pdf.SigningInformation;
 import com.qoppa.pdf.annotations.Annotation;
 import com.qoppa.pdf.annotations.FreeText;
@@ -22,6 +25,7 @@ import com.qoppa.pdfNotes.settings.AnnotationTools;
 import com.qoppa.pdfNotes.settings.StickyNoteTool;
 
 public class IcsPdfNotesBean extends PDFNotesBean {
+    private static Logger log = LogManager.getLogger(IcsPdfNotesBean.class.getName());
     private static final long serialVersionUID = 4331766079865005754L;
 
     @Override
@@ -38,8 +42,7 @@ public class IcsPdfNotesBean extends PDFNotesBean {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
-        System.out.println("---> " + e.getActionCommand());
+        log.debug("---> " + e.getActionCommand());
         IPDFDocument doc = getDocument();
 
         String oldstring = "2011-01-18 00:00:00.0";
@@ -47,7 +50,7 @@ public class IcsPdfNotesBean extends PDFNotesBean {
         try {
             date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").parse(oldstring);
         } catch (ParseException e1) {
-            e1.printStackTrace();
+            log.fatal("ERROR", e1);
             return;
         }
 
@@ -113,7 +116,7 @@ public class IcsPdfNotesBean extends PDFNotesBean {
 
                     saveDocument("d:\\final_output.pdf");
                 } catch (Exception e2) {
-                    e2.printStackTrace();
+                    log.fatal("ERROR", e2);
                     return;
                 }
             }

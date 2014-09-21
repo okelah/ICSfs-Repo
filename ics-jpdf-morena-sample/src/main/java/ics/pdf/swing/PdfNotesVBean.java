@@ -30,6 +30,10 @@ import javax.swing.UIManager;
 
 import oracle.forms.properties.ID;
 import oracle.forms.ui.VBean;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -49,6 +53,9 @@ import eu.gnome.morena.Manager;
  *
  */
 public class PdfNotesVBean extends VBean implements ActionListener {
+
+    private static Logger log = LogManager.getLogger(PdfNotesVBean.class.getName());
+
     private PDFNotesBean pDFVBean = null;
     private static PdfNotesVBean sf = null;
     private static String fileName = null;
@@ -75,7 +82,7 @@ public class PdfNotesVBean extends VBean implements ActionListener {
     // display the whole text
     //
     public void showPDF() {
-        System.out.println("showPDF");
+        log.debug("showPDF");
         BASE64Decoder b64dc = new BASE64Decoder();
         byte[] b;
         try {
@@ -182,25 +189,24 @@ public class PdfNotesVBean extends VBean implements ActionListener {
      *
      */
     public PdfNotesVBean() {
-        // Configuration.setLogLevel(java.util.logging.Level.ALL);
-        // Configuration.setLogLevel(BanksConfig.getInstance().getInt("morena.log.level"));
+        Configuration.setLogLevel(java.util.logging.Level
+            .parse(BanksConfig.getInstance().getString("morena.log.level")));
         @SuppressWarnings("unchecked")
         ArrayList<String> deviceTypes = (ArrayList<String>) BanksConfig.getInstance()
-        .getProperty("morena.device.types");
+                .getProperty("morena.device.types");
         for (String deviceType : deviceTypes) {
-            // Configuration.addDeviceType(".*HP.*", true);
             Configuration.addDeviceType(deviceType, true);
         }
         setLookAndFeel();
         manager = Manager.getInstance();
         getPDFNotes().setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.gray, 1));
 
-        JButton ftCorrect = new JButton("FT");
+        JButton ftCorrect = new JButton("Free Text");
         ftCorrect.setActionCommand(FREETEXT_CORRECT);
         ftCorrect.addActionListener(this);
         getPDFNotes().getAnnotToolbar().add(ftCorrect);
 
-        JButton rsCorrect = new JButton("RS");
+        JButton rsCorrect = new JButton("Stamp");
         rsCorrect.setActionCommand(STAMP_CORRECT);
         rsCorrect.addActionListener(this);
         getPDFNotes().getAnnotToolbar().add(rsCorrect);
@@ -236,20 +242,17 @@ public class PdfNotesVBean extends VBean implements ActionListener {
             try {
                 getPDFNotes().loadPDF(new URL(loadDoc));
             } catch (PDFException e) {
-                // TODO
-                e.printStackTrace();
+                log.fatal("ERROR", e);
                 System.exit(1);
             } catch (MalformedURLException e) {
-                // TODO
-                e.printStackTrace();
+                log.fatal("ERROR", e);
                 System.exit(1);
             }
         } else {
             try {
                 getPDFNotes().loadPDF(loadDoc);
             } catch (PDFException e) {
-                // TODO
-                e.printStackTrace();
+                log.fatal("ERROR", e);
                 System.exit(1);
             }
         }
@@ -289,6 +292,7 @@ public class PdfNotesVBean extends VBean implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
+        log.debug("---> " + e.getActionCommand());
         IPDFDocument doc = getPDFNotes().getDocument();
 
         if (doc != null) {
@@ -308,8 +312,7 @@ public class PdfNotesVBean extends VBean implements ActionListener {
                     // getPDFNotes().startEdit(factory.createRubberStamp(image), true);
                     getPDFNotes().startEdit(factory.createRubberStamp(image), true, true);
                 } catch (IOException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
+                    log.fatal("ERROR", e1);
                 }
 
             } else if (e.getActionCommand() == RED_CIRCLE) {
