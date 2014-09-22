@@ -34,7 +34,7 @@ public class IcsPdfNotesBean extends PDFNotesBean {
     private static String testAction = "TEST-ACTION";
 
     public IcsPdfNotesBean() {
-        JButton jbRedCircle = new JButton("test Action");
+        JButton jbRedCircle = new JButton("test Action...");
         jbRedCircle.setActionCommand(testAction);
         jbRedCircle.addActionListener(this);
         getAnnotToolbar().add(jbRedCircle);
@@ -92,7 +92,7 @@ public class IcsPdfNotesBean extends PDFNotesBean {
                     getDocument().getPDFPermissions().getPasswordPermissions().setAssembleDocumentAllowed(false);
                     getDocument().getPDFPermissions().getPasswordPermissions().setExtractTextGraphicsAllowed(false);
                     getDocument().getPDFPermissions().getPasswordPermissions()
-                    .setExtractTextGraphicsForAccessibilityAllowed(false);
+                            .setExtractTextGraphicsForAccessibilityAllowed(false);
                     getDocument().getPDFPermissions().getPasswordPermissions().setFillFormFieldsAllowed(false);
                     getDocument().getPDFPermissions().getPasswordPermissions().setPrintHighResAllowed(false);
 
