@@ -1,9 +1,5 @@
 package ics.pdf.swing;
 
-import ics.pdf.swing.action.AcquireBatchImageAction;
-import ics.pdf.swing.action.SetupDeviceAction;
-import ics.pdf.swing.action.SetupDevicePropertiesAction;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.DisplayMode;
@@ -42,7 +38,6 @@ import com.qoppa.pdf.annotations.Circle;
 import com.qoppa.pdf.annotations.FreeText;
 import com.qoppa.pdf.annotations.IAnnotationFactory;
 import com.qoppa.pdf.dom.IPDFDocument;
-import com.qoppa.pdfNotes.PDFNotesBean;
 import com.qoppa.pdfNotes.settings.FreeTextTool;
 
 import eu.gnome.morena.Configuration;
@@ -56,7 +51,7 @@ public class PdfNotesVBean extends VBean implements ActionListener {
 
     private static Logger log = LogManager.getLogger(PdfNotesVBean.class.getName());
 
-    private PDFNotesBean pDFVBean = null;
+    private IcsPdfNotesBean pDFVBean = null;
     private static PdfNotesVBean sf = null;
     private static String fileName = null;
     private static StringBuffer sb = new StringBuffer();
@@ -69,7 +64,7 @@ public class PdfNotesVBean extends VBean implements ActionListener {
 
     private final static String PRINT_ENABLED = "printEnabled";
 
-    public final static ID SetPrint = ID.registerProperty("SET_PRINT");
+    public final static ID PROPERTIES = ID.registerProperty("PROPERTIES");
 
     private Manager manager = null;
 
@@ -139,6 +134,7 @@ public class PdfNotesVBean extends VBean implements ActionListener {
         jf.setLocationRelativeTo(null);
 
         sf = new PdfNotesVBean();
+        sf.setProperty(PROPERTIES, "MODE=CREATE,PRINT=true,STAMP=1,SIGN=1");
         jf.add(sf);
         jf.setVisible(true);
 
@@ -182,6 +178,7 @@ public class PdfNotesVBean extends VBean implements ActionListener {
                 sf.showPDF();
             }
         });
+
     }
 
     /**
@@ -190,10 +187,10 @@ public class PdfNotesVBean extends VBean implements ActionListener {
      */
     public PdfNotesVBean() {
         Configuration.setLogLevel(java.util.logging.Level
-            .parse(BanksConfig.getInstance().getString("morena.log.level")));
+                .parse(BanksConfig.getInstance().getString("morena.log.level")));
         @SuppressWarnings("unchecked")
         ArrayList<String> deviceTypes = (ArrayList<String>) BanksConfig.getInstance()
-                .getProperty("morena.device.types");
+        .getProperty("morena.device.types");
         for (String deviceType : deviceTypes) {
             Configuration.addDeviceType(deviceType, true);
         }
@@ -222,10 +219,6 @@ public class PdfNotesVBean extends VBean implements ActionListener {
         jbPrintEnabled.setActionCommand(PRINT_ENABLED);
         jbPrintEnabled.addActionListener(this);
         getPDFNotes().getAnnotToolbar().add(jbPrintEnabled);
-
-        getPDFNotes().getToolbar().add(new AcquireBatchImageAction(getPDFNotes(), manager, this));
-        getPDFNotes().getToolbar().add(new SetupDeviceAction(manager, this));
-        getPDFNotes().getToolbar().add(new SetupDevicePropertiesAction(manager, this));
 
         setLayout(new BorderLayout());
 
@@ -260,14 +253,8 @@ public class PdfNotesVBean extends VBean implements ActionListener {
 
     @Override
     public boolean setProperty(ID property, Object value) {
-        if (property == SetPrint) {
-            String label = value.toString().trim();
-            if (label.equalsIgnoreCase("true")) {
-                getPDFNotes().getToolbar().getjbPrint().setEnabled(true);
-            } else {
-                getPDFNotes().getToolbar().getjbPrint().setEnabled(false);
-            }
-
+        if (property == PROPERTIES) {
+            getPDFNotes().setProperties(IcsOracleFormMessages.decypherIcsOracleFormPrpertiesMsg((String) value));
             return true;
         } else {
             return super.setProperty(property, value);
@@ -330,9 +317,9 @@ public class PdfNotesVBean extends VBean implements ActionListener {
         }
     }
 
-    private PDFNotesBean getPDFNotes() {
+    private IcsPdfNotesBean getPDFNotes() {
         if (pDFVBean == null) {
-            pDFVBean = new IcsPdfNotesBean();
+            pDFVBean = new IcsPdfNotesBean(manager);
         }
         return pDFVBean;
     }

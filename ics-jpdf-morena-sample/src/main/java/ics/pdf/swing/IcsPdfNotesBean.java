@@ -1,10 +1,17 @@
 package ics.pdf.swing;
 
+import ics.pdf.swing.IcsOracleFormMessages.IcsOracleFormPropertiesMsg;
+import ics.pdf.swing.action.AcquireBatchImageAction;
+import ics.pdf.swing.action.SetupDeviceAction;
+import ics.pdf.swing.action.SetupDevicePropertiesAction;
+
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.KeyStore;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,19 +33,61 @@ import com.qoppa.pdf.dom.IPDFDocument;
 import com.qoppa.pdf.form.SignatureField;
 import com.qoppa.pdfNotes.PDFNotesBean;
 import com.qoppa.pdfNotes.settings.AnnotationTools;
+import com.qoppa.pdfNotes.settings.SignatureTool;
 import com.qoppa.pdfNotes.settings.StickyNoteTool;
+
+import eu.gnome.morena.Manager;
 
 public class IcsPdfNotesBean extends PDFNotesBean {
     private static Logger log = LogManager.getLogger(IcsPdfNotesBean.class.getName());
     private static final long serialVersionUID = 4331766079865005754L;
+
+    public static String MODE_VIEW = "VIEW";
+    public static String MODE_EDIT = "EDIT";
+    public static String MODE_CREATE = "CREATE";
+
     private static String testAction = "TEST-ACTION";
 
-    public IcsPdfNotesBean() {
+    private Manager manager;
+
+    private AcquireBatchImageAction acquireBatchImageAction;
+    private SetupDeviceAction setupDeviceAction;
+    private SetupDevicePropertiesAction setupDevicePropertiesAction;
+
+    public IcsPdfNotesBean(Manager manager) {
+        this.manager = manager;
         JButton jbRedCircle = new JButton("test Action");
         jbRedCircle.setActionCommand(testAction);
         jbRedCircle.addActionListener(this);
         getAnnotToolbar().add(jbRedCircle);
         // getEditToolbar().add(new JButton("TEST"));
+
+        // PageViewContextMenu contextMenu = getPageViewPanel().getPageContextMenu();
+        // JMenuItem menuItem = new JMenuItem("My Menu Item1");
+        // contextMenu.getPopupMenu().add(menuItem);
+
+        // TextSelectionContextMenu textContextMenu = getPageViewPanel().getTextSelectionContextMenu();
+        // JMenuItem textMenuItem = new JMenuItem("My Menu Item2");
+        // textContextMenu.getPopupMenu().add(textMenuItem);
+
+        AnnotationTools.setDeleteEnabled(false);
+        AnnotationTools.setFlatteningEnabled(false);
+        AnnotationTools.setReviewEnabled(false);
+        AnnotationTools.setContextMenuEnabled(false);
+        SignatureTool.setAllowSign(false);
+
+        getToolbar().getjbPrint().setEnabled(false);
+
+        getSelectToolbar().getJbSnapShot().setVisible(false);
+        getEditToolbar().getjbSave().setVisible(false);
+        getAnnotToolbar().getjbSound().setVisible(false);
+
+        acquireBatchImageAction = new AcquireBatchImageAction(this, manager, this);
+        setupDeviceAction = new SetupDeviceAction(manager, this);
+        setupDevicePropertiesAction = new SetupDevicePropertiesAction(manager, this);
+        getToolbar().add(acquireBatchImageAction);
+        getToolbar().add(setupDeviceAction);
+        getToolbar().add(setupDevicePropertiesAction);
     }
 
     @Override
@@ -68,12 +117,28 @@ public class IcsPdfNotesBean extends PDFNotesBean {
             return;
         }
 
+        if (e.getActionCommand().equals("AttachFile") && doc == null) {
+            try {
+                InputStream is = this.getClass().getClassLoader().getResourceAsStream("empty.pdf");
+                loadDocument(is, "pdf");
+                getAttachmentPanel().setActive(true);
+                getAttachmentPanel().setPaneVisible(true);
+            } catch (PDFException e2) {
+                log.fatal("", e2);
+            } catch (IOException e2) {
+                log.fatal("", e2);
+            }
+
+        }
+
         if (doc != null) {
             IAnnotationFactory factory = getDocument().getAnnotationFactory();
 
             if (e.getActionCommand().equals(testAction)) {
 
                 try {
+
+                    setEnabled(false);
                     addSignatureField();
                     getDocument().getDocumentInfo().setAuthor("test-user");
                     getDocument().getDocumentInfo().setCreationDate(date);
@@ -168,5 +233,52 @@ public class IcsPdfNotesBean extends PDFNotesBean {
             }
         }
         super.actionPerformed(e);
+    }
+
+    public void setProperties(IcsOracleFormPropertiesMsg ddd) {
+        System.out.println(ddd);
+        setMode(ddd.getMode());
+        setPrintEnabled(ddd.isPrint());
+        setStampEnabled(ddd.isStamp());
+        setSignatureEnabled(ddd.isSignature());
+    }
+
+    public void setMode(String mode) {
+        if (mode.equals(MODE_EDIT)) {
+            getToolbar().getjbOpen().setEnabled(false);
+            getEditToolbar().setVisible(true);
+
+            acquireBatchImageAction.setEnabled(false);
+            setupDeviceAction.setEnabled(false);
+            setupDevicePropertiesAction.setEnabled(false);
+
+        } else if (mode.equals(MODE_CREATE)) {
+            getToolbar().getjbOpen().setEnabled(true);
+            getEditToolbar().setVisible(true);
+
+            acquireBatchImageAction.setEnabled(true);
+            setupDeviceAction.setEnabled(true);
+            setupDevicePropertiesAction.setEnabled(true);
+
+        } else { // MODE_VIEW
+            getToolbar().getjbOpen().setEnabled(false);
+            getEditToolbar().setVisible(false);
+            acquireBatchImageAction.setEnabled(false);
+            setupDeviceAction.setEnabled(false);
+            setupDevicePropertiesAction.setEnabled(false);
+        }
+    }
+
+    public void setPrintEnabled(boolean flag) {
+        getToolbar().getjbPrint().setEnabled(flag);
+
+    }
+
+    public void setStampEnabled(boolean flag) {
+        getAnnotToolbar().getjbStamp().setVisible(flag);
+    }
+
+    public void setSignatureEnabled(boolean flag) {
+        SignatureTool.setAllowSign(flag);
     }
 }
