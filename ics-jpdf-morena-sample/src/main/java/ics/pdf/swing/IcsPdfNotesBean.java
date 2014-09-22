@@ -10,9 +10,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.swing.JButton;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.qoppa.pdf.PDFException;
+import com.qoppa.pdf.PDFPassword;
 import com.qoppa.pdf.SigningInformation;
 import com.qoppa.pdf.annotations.Annotation;
 import com.qoppa.pdf.annotations.FreeText;
@@ -27,6 +31,15 @@ import com.qoppa.pdfNotes.settings.StickyNoteTool;
 public class IcsPdfNotesBean extends PDFNotesBean {
     private static Logger log = LogManager.getLogger(IcsPdfNotesBean.class.getName());
     private static final long serialVersionUID = 4331766079865005754L;
+    private static String testAction = "TEST-ACTION";
+
+    public IcsPdfNotesBean() {
+        JButton jbRedCircle = new JButton("test Action");
+        jbRedCircle.setActionCommand(testAction);
+        jbRedCircle.addActionListener(this);
+        getAnnotToolbar().add(jbRedCircle);
+        // getEditToolbar().add(new JButton("TEST"));
+    }
 
     @Override
     public void startEdit(Annotation annot, boolean useDefault, boolean isSticky) {
@@ -42,7 +55,8 @@ public class IcsPdfNotesBean extends PDFNotesBean {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        log.debug("---> " + e.getActionCommand());
+
+        log.debug("---> ActionID: " + e.getID() + " ActionCommand: " + e.getActionCommand());
         IPDFDocument doc = getDocument();
 
         String oldstring = "2011-01-18 00:00:00.0";
@@ -55,11 +69,39 @@ public class IcsPdfNotesBean extends PDFNotesBean {
         }
 
         if (doc != null) {
-            System.out.println("----------");
             IAnnotationFactory factory = getDocument().getAnnotationFactory();
 
-            if (e.getActionCommand().equals("Note")) {
+            if (e.getActionCommand().equals(testAction)) {
 
+                try {
+                    addSignatureField();
+                    getDocument().getDocumentInfo().setAuthor("test-user");
+                    getDocument().getDocumentInfo().setCreationDate(date);
+                    getDocument().getDocumentInfo().setModifiedDate(date);
+                    getDocument().getDocumentInfo().setTitle("test-title");
+                    getDocument().getDocumentInfo().setSubject("test-subject");
+                    getDocument().getDocumentInfo().setKeywords("keyword-1 keyword-2");
+                    getDocument().getDocumentInfo().setProducer("test-producer");
+                    getDocument().getDocumentInfo().setCustomProperty("test-CustomProperty", "Custom-Property");
+
+                    setPasswordHandler(new PDFPassword("123456"));
+
+                    getDocument().getPDFPermissions().getPasswordPermissions().setChangeDocumentAllowed(false);
+                    getDocument().getPDFPermissions().getPasswordPermissions().setModifyAnnotsAllowed(false);
+                    getDocument().getPDFPermissions().getPasswordPermissions().setPrintAllowed(false);
+                    getDocument().getPDFPermissions().getPasswordPermissions().setAssembleDocumentAllowed(false);
+                    getDocument().getPDFPermissions().getPasswordPermissions().setExtractTextGraphicsAllowed(false);
+                    getDocument().getPDFPermissions().getPasswordPermissions()
+                            .setExtractTextGraphicsForAccessibilityAllowed(false);
+                    getDocument().getPDFPermissions().getPasswordPermissions().setFillFormFieldsAllowed(false);
+                    getDocument().getPDFPermissions().getPasswordPermissions().setPrintHighResAllowed(false);
+
+                    save();
+                } catch (PDFException e1) {
+                    e1.printStackTrace();
+                }
+
+            } else if (e.getActionCommand().equals("Note")) {
                 Text t = factory.createText("test me", true, Text.ICON_KEY);
                 t.setModifiedDate(date);
                 t.setSubject("aloha... ha ha");
@@ -67,6 +109,7 @@ public class IcsPdfNotesBean extends PDFNotesBean {
                 t.setName("name test");
                 t.setLocked(true);
                 t.setBorderWidth(200);
+
                 StickyNoteTool.setDefaultProperties(t);
                 StickyNoteTool.setDefaultTransparency(ERROR);
                 StickyNoteTool.setDefaultColor(Color.BLUE);
@@ -76,10 +119,14 @@ public class IcsPdfNotesBean extends PDFNotesBean {
 
                 AnnotationTools.setDefaultAuthor("ابراهيم");
                 AnnotationTools.setAuthorEditable(false);
+                AnnotationTools.setContextMenuEnabled(false);
+                AnnotationTools.setDeleteEnabled(false);
                 AnnotationTools.setReviewEnabled(false);
+
                 // AnnotationTools.setSnapToContent(true);
             } else if (e.getActionCommand().equals("Save")) {
                 try {
+
                     getDocument().getDocumentInfo().setModifiedDate(date);
 
                     getDocument().getDocumentInfo().setSubject("testing subject");
