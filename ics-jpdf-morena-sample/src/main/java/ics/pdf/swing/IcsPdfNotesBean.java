@@ -92,7 +92,7 @@ public class IcsPdfNotesBean extends PDFNotesBean {
                     getDocument().getPDFPermissions().getPasswordPermissions().setAssembleDocumentAllowed(false);
                     getDocument().getPDFPermissions().getPasswordPermissions().setExtractTextGraphicsAllowed(false);
                     getDocument().getPDFPermissions().getPasswordPermissions()
-                            .setExtractTextGraphicsForAccessibilityAllowed(false);
+                    .setExtractTextGraphicsForAccessibilityAllowed(false);
                     getDocument().getPDFPermissions().getPasswordPermissions().setFillFormFieldsAllowed(false);
                     getDocument().getPDFPermissions().getPasswordPermissions().setPrintHighResAllowed(false);
 
@@ -115,7 +115,6 @@ public class IcsPdfNotesBean extends PDFNotesBean {
                 StickyNoteTool.setDefaultColor(Color.BLUE);
                 StickyNoteTool.setShowPropDialog(true);
                 StickyNoteTool.setToolSticky(true);
-                // StickyNoteTool.setToolSticky(false);
 
                 AnnotationTools.setDefaultAuthor("ابراهيم");
                 AnnotationTools.setAuthorEditable(false);
