@@ -19,6 +19,7 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import org.apache.logging.log4j.LogManager;
@@ -42,7 +43,7 @@ public class AcquireBatchImageAction extends AbstractAction implements TransferL
     private Component parent = null;
 
     public AcquireBatchImageAction(PDFNotesBean pDFNotesBean, Manager manager, Component parent) {
-        super("Scan...");
+        super("Scan...", getIcon());
         this.pDFNotesBean = pDFNotesBean;
         this.manager = manager;
         this.parent = parent;
@@ -257,5 +258,13 @@ public class AcquireBatchImageAction extends AbstractAction implements TransferL
             }
         }
         return scanner;
+    }
+
+    private static ImageIcon getIcon() {
+        java.net.URL imgURL = AcquireBatchImageAction.class.getClassLoader().getResource("scanner1.png");
+        if (imgURL != null) {
+            return new ImageIcon(imgURL, null);
+        }
+        return null;
     }
 }

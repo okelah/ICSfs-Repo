@@ -125,7 +125,7 @@ public class PdfNotesVBean extends VBean implements ActionListener {
     }
 
     public static void main(String[] args) {
-        JFrame jf = new JFrame("Oracle Forms Demo... ");
+        JFrame jf = new JFrame("ICSfs jPDFNotes");
 
         jf.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
 
@@ -188,10 +188,10 @@ public class PdfNotesVBean extends VBean implements ActionListener {
     public PdfNotesVBean() {
         BanksConfig.loadLog4jConfiguration();
         Configuration.setLogLevel(java.util.logging.Level
-                .parse(BanksConfig.getInstance().getString("morena.log.level")));
+            .parse(BanksConfig.getInstance().getString("morena.log.level")));
         @SuppressWarnings("unchecked")
         ArrayList<String> deviceTypes = (ArrayList<String>) BanksConfig.getInstance()
-                .getProperty("morena.device.types");
+        .getProperty("morena.device.types");
         for (String deviceType : deviceTypes) {
             Configuration.addDeviceType(deviceType, true);
         }

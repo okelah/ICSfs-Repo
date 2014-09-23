@@ -9,6 +9,7 @@ import java.io.File;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import org.apache.logging.log4j.LogManager;
@@ -28,7 +29,7 @@ public class SetupDeviceAction extends AbstractAction implements TransferListene
     private Component parent = null;
 
     public SetupDeviceAction(Manager manager, Component parent) {
-        super("Setup Device");
+        super("Setup Device", getIcon());
         this.manager = manager;
         this.parent = parent;
     }
@@ -90,5 +91,13 @@ public class SetupDeviceAction extends AbstractAction implements TransferListene
             BanksConfig.setupDeviceProperties(scanner);
         }
         return scanner;
+    }
+
+    private static ImageIcon getIcon() {
+        java.net.URL imgURL = SetupDeviceAction.class.getClassLoader().getResource("scanner-setup.png");
+        if (imgURL != null) {
+            return new ImageIcon(imgURL, null);
+        }
+        return null;
     }
 }

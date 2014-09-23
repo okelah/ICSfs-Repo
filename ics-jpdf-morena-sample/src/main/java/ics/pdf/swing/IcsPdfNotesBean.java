@@ -88,6 +88,8 @@ public class IcsPdfNotesBean extends PDFNotesBean {
         getToolbar().add(acquireBatchImageAction);
         getToolbar().add(setupDeviceAction);
         getToolbar().add(setupDevicePropertiesAction);
+
+        stopWidgetEditing();
     }
 
     @Override
@@ -95,11 +97,21 @@ public class IcsPdfNotesBean extends PDFNotesBean {
         // Call PDFNotesBean to set its own properties
         super.startEdit(annot, true, isSticky);
 
+        setOpenPDFOnly(true);
+
+        if (annot instanceof Text) {
+            Text t = (Text) annot;
+
+            t.setLocked(true);
+            t.setReadOnly(true);
+        }
+
         // Set type writer text color. A typewriter annotation is just a FreeText annotation
         // with the intent set to TypeWriter.
         if (annot instanceof FreeText && ((FreeText) annot).isIntentTypeWriter()) {
             ((FreeText) annot).setTextColor(Color.red);
         }
+
     }
 
     @Override
@@ -236,7 +248,6 @@ public class IcsPdfNotesBean extends PDFNotesBean {
     }
 
     public void setProperties(IcsOracleFormPropertiesMsg ddd) {
-        System.out.println(ddd);
         setMode(ddd.getMode());
         setPrintEnabled(ddd.isPrint());
         setStampEnabled(ddd.isStamp());
@@ -261,6 +272,8 @@ public class IcsPdfNotesBean extends PDFNotesBean {
             setupDevicePropertiesAction.setEnabled(true);
 
         } else { // MODE_VIEW
+            // stopWidgetEditing();
+            // getThumbnailPanelNotes().enableEditing(false);
             getToolbar().getjbOpen().setEnabled(false);
             getEditToolbar().setVisible(false);
             acquireBatchImageAction.setEnabled(false);
@@ -281,4 +294,5 @@ public class IcsPdfNotesBean extends PDFNotesBean {
     public void setSignatureEnabled(boolean flag) {
         SignatureTool.setAllowSign(flag);
     }
+
 }
