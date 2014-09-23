@@ -136,7 +136,7 @@ public class AcquireBatchImageAction extends AbstractAction implements TransferL
                     }
                 } else {
                     System.out.println("Scanner is Camera...");
-                    log.fatal("Scanner was found as Camera");
+                    log.error("Scanner was found as Camera");
                     JOptionPane.showMessageDialog(parent, "Scanner was found as Camera", "Error",
                         JOptionPane.ERROR_MESSAGE);
                     return;
@@ -184,10 +184,7 @@ public class AcquireBatchImageAction extends AbstractAction implements TransferL
             setEnabled(true);
         } catch (Throwable exception) {
             JOptionPane.showMessageDialog(parent, exception.toString(), "Error", JOptionPane.ERROR_MESSAGE);
-            // exception.printStackTrace();
             log.fatal("ERROR", exception);
-            // System.out.println("Failed, try again ...");
-            // cancelAction.setEnabled(false);
         }
     }
 

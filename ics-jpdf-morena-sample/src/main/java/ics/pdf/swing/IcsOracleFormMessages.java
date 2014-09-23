@@ -1,25 +1,24 @@
 package ics.pdf.swing;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class IcsOracleFormMessages {
+
+    static Logger log = LogManager.getLogger(IcsOracleFormMessages.class);
 
     public static IcsOracleFormPropertiesMsg decypherIcsOracleFormPrpertiesMsg(String msg) {
         String incommingMsg = msg.toUpperCase();
         StringTokenizer st = new StringTokenizer(incommingMsg.replaceAll("\\s+", ""), ",");
 
-        Map<String, String> list = new HashMap<String, String>();
-        IcsOracleFormMessages dd = new IcsOracleFormMessages();
-        IcsOracleFormPropertiesMsg msgObject = dd.new IcsOracleFormPropertiesMsg();
+        IcsOracleFormPropertiesMsg msgObject = new IcsOracleFormMessages().new IcsOracleFormPropertiesMsg();
 
         try {
             while (st.hasMoreTokens()) {
                 String element = (String) st.nextElement();
                 StringTokenizer newSt = new StringTokenizer(element, "=");
-
-                System.out.println(element);
 
                 String key = (String) newSt.nextElement();
                 if (newSt.hasMoreElements()) {
@@ -35,7 +34,7 @@ public class IcsOracleFormMessages {
                     }
 
                 } else {
-                    System.out.println("ERROR ... key [" + key + "] does not have value");
+                    log.fatal("ERROR ... key [" + key + "] does not have value");
                 }
             }
         } catch (java.util.NoSuchElementException e) {
@@ -53,7 +52,6 @@ public class IcsOracleFormMessages {
         static final String MODE = "MODE";
         static final String PRINT = "PRINT";
         static final String STAMP = "STAMP";
-
         static final String SIGNATURE = "SIGN";
 
         IcsOracleFormPropertiesMsg() {

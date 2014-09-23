@@ -1,27 +1,36 @@
 package ics.pdf.swing;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 import java.util.logging.Level;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import eu.gnome.morena.Scanner;
 
 public class BanksConfig {
 
     private static PropertiesConfiguration config = null;
+    static Logger log = LogManager.getLogger(BanksConfig.class);
 
     private static String propertiesDirectory = System.getProperty("java.io.tmpdir") + "banks";
     private static String propertiesFile = propertiesDirectory + "/usergui.properties";
+    public static String logFile = propertiesDirectory + "/log4j2.xml";
 
     private static PropertiesConfiguration loadConfiguration() {
         try {
             File configFile = new File(propertiesFile);
             if (!configFile.exists()) {
+                log.info("Create New properties file");
                 new File(propertiesDirectory).mkdir();
                 configFile.createNewFile();
                 PropertiesConfiguration config = new PropertiesConfiguration(propertiesFile);
@@ -48,9 +57,9 @@ public class BanksConfig {
             }
 
         } catch (ConfigurationException e1) {
-            e1.printStackTrace();
+            log.fatal("ERROR", e1);
         } catch (IOException e1) {
-            e1.printStackTrace();
+            log.fatal("ERROR", e1);
         }
         return null;
     }
@@ -92,6 +101,28 @@ public class BanksConfig {
         str.append(Scanner.BLACK_AND_WHITE);
         setProperty("all.modes", str.toString());
         setProperty("scanner.SupportedResolutions", scanner.getSupportedResolutions());
+    }
+
+    public static void loadLog4jConfiguration() {
+        try {
+            File logConfigFile = new File(logFile);
+            if (!logConfigFile.exists()) {
+                log.info("Create New log4j2 file");
+                InputStream inputStream = BanksConfig.class.getClassLoader().getResourceAsStream("log4j2.xml");
+                FileOutputStream outputStream = new FileOutputStream(logConfigFile);
+
+                int read = 0;
+                byte[] bytes = new byte[1024];
+
+                while ((read = inputStream.read(bytes)) != -1) {
+                    outputStream.write(bytes, 0, read);
+                }
+            }
+            URI source = logConfigFile.toURI();
+            Configurator.initialize("contextLog4J", null, source);
+        } catch (Exception e) {
+            log.fatal("ERROR", e);
+        }
     }
 
 }

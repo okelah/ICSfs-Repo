@@ -30,9 +30,9 @@
 	</Appenders>
 	<Loggers>
 		<Root level="trace" additivity="false">
-			<AppenderRef ref="file" level="DEBUG" />
+			<AppenderRef ref="file" level="info" />
 			<AppenderRef ref="errorFile" level="error" />
-			<AppenderRef ref="STDOUT" level="DEBUG" />
+			<AppenderRef ref="STDOUT" level="info" />
 		</Root>
 	</Loggers>
 </Configuration>

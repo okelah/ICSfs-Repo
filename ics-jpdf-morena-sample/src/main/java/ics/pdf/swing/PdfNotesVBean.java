@@ -186,11 +186,12 @@ public class PdfNotesVBean extends VBean implements ActionListener {
      *
      */
     public PdfNotesVBean() {
+        BanksConfig.loadLog4jConfiguration();
         Configuration.setLogLevel(java.util.logging.Level
                 .parse(BanksConfig.getInstance().getString("morena.log.level")));
         @SuppressWarnings("unchecked")
         ArrayList<String> deviceTypes = (ArrayList<String>) BanksConfig.getInstance()
-        .getProperty("morena.device.types");
+                .getProperty("morena.device.types");
         for (String deviceType : deviceTypes) {
             Configuration.addDeviceType(deviceType, true);
         }
