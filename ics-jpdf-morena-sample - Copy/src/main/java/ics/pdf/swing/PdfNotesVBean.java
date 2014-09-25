@@ -64,9 +64,10 @@ public class PdfNotesVBean extends Applet implements ActionListener {
     private String lang;
 
     private Manager manager = null;
-    private String version = "25_9_14_1353";
+    private String version = "25_9_14_1326";
 
     public void addText(String value) {
+        System.out.println("addText");
         sb.append(value);
     }
 

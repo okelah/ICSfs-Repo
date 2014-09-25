@@ -269,7 +269,7 @@ public class IcsPdfNotesBean extends PDFNotesBean implements IDocumentListener, 
             if (de.getObject() instanceof Text) {
                 ((Text) de.getObject()).setModifiedDate(getCurrentDate());
             }
-            // System.out.println("getPageIndex() " + de.getPageIndex());
+            System.out.println("getPageIndex() " + de.getPageIndex());
         } catch (Exception exe) {
             System.err.println("docchange error");
         }
@@ -291,6 +291,7 @@ public class IcsPdfNotesBean extends PDFNotesBean implements IDocumentListener, 
         if (currentDate == null) {
             currentDate = new Date();
         }
+        System.out.println("currentDate " + currentDate);
         return currentDate;
     }
 
