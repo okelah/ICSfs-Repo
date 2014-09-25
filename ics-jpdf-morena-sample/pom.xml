@@ -10,6 +10,8 @@
 
 	<properties>
 		<jdk.version>1.6</jdk.version>
+		<timestamp>${maven.build.timestamp}</timestamp>
+		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 	</properties>
 
 	<dependencies>
@@ -19,21 +21,11 @@
 			<version>3.8.1</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-fileupload</groupId>
-			<artifactId>commons-fileupload</artifactId>
-			<version>1.2</version>
-		</dependency>
+		<!-- dependency> <groupId>commons-io</groupId> <artifactId>commons-io</artifactId> 
+			<version>2.4</version> </dependency> <dependency> <groupId>javax.servlet</groupId> 
+			<artifactId>servlet-api</artifactId> <version>2.5</version> </dependency> 
+			<dependency> <groupId>commons-fileupload</groupId> <artifactId>commons-fileupload</artifactId> 
+			<version>1.2</version> </dependency -->
 		<dependency>
 			<groupId>oracle.forms</groupId>
 			<artifactId>frmall</artifactId>
@@ -118,17 +110,10 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>2.0.2</version>
-		</dependency>
-
-		<dependency>
 			<groupId>commons-configuration</groupId>
 			<artifactId>commons-configuration</artifactId>
 			<version>1.10</version>
 		</dependency>
-
 
 	</dependencies>
 
@@ -149,11 +134,9 @@
 					<plugin>
 						<artifactId>maven-assembly-plugin</artifactId>
 						<configuration>
-
 							<archive>
 								<manifest>
-									<addClasspath>true</addClasspath>
-									<classpathPrefix>/</classpathPrefix>
+									<addClasspath>false</addClasspath>
 									<mainClass>ics.pdf.swing.PdfNotesVBean</mainClass>
 								</manifest>
 								<manifestEntries>
@@ -177,7 +160,6 @@
 									<goal>single</goal>
 								</goals>
 							</execution>
-
 						</executions>
 					</plugin>
 				</plugins>
@@ -197,6 +179,28 @@
 							<target>${jdk.version}</target>
 						</configuration>
 					</plugin>
+
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jar-plugin</artifactId>
+						<configuration>
+							<archive>
+								<manifestEntries>
+									<Implementation-Title>com.sun.media.imageio</Implementation-Title>
+									<Implementation-Version>1.0_01</Implementation-Version>
+									<Implementation-Vendor>Sun Microsystems, Inc.</Implementation-Vendor>
+									<Specification-Title>Java Advanced Imaging Image I/O Tools</Specification-Title>
+									<Specification-Version>1.0-mr</Specification-Version>
+									<Permissions>all-permissions</Permissions>
+									<Codebase>*</Codebase>
+									<Application-Name>OracleForms</Application-Name>
+									<Implementation-Build>${version}</Implementation-Build>
+									<Build-Date>${maven.build.timestamp}</Build-Date>
+								</manifestEntries>
+							</archive>
+						</configuration>
+					</plugin>
+
 				</plugins>
 			</build>
 		</profile>

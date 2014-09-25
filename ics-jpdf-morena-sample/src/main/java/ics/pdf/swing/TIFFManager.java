@@ -19,9 +19,6 @@ import javax.media.jai.NullOpImage;
 import javax.media.jai.OpImage;
 import javax.media.jai.PlanarImage;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.sun.media.imageio.plugins.tiff.TIFFImageWriteParam;
 import com.sun.media.jai.codec.FileSeekableStream;
 import com.sun.media.jai.codec.ImageCodec;
@@ -30,7 +27,6 @@ import com.sun.media.jai.codec.SeekableStream;
 import com.sun.media.jai.codec.TIFFDecodeParam;
 
 public class TIFFManager {
-    static Logger log = LogManager.getLogger(TIFFManager.class.getName());
 
     public static List<BufferedImage> getImageListFromTiff(String inputFile) {
         BufferedImage finalImage = null;
@@ -62,8 +58,7 @@ public class TIFFManager {
             // out.close();
 
         } catch (IOException ex) {
-            // ex.printStackTrace();
-            log.fatal("ERROR", ex);
+            ex.printStackTrace();
         }
         return imageList;
     }
@@ -122,8 +117,7 @@ public class TIFFManager {
                     baos.close();
                 }
             } catch (IOException e) {
-                // e.printStackTrace();
-                log.fatal("ERROR", e);
+                e.printStackTrace();
                 return null;
             }
         }
@@ -166,15 +160,15 @@ public class TIFFManager {
                         if (pixelSize == 1) {
                             writeParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
                             writeParam.setCompressionType("CCITT T.4");
-                            log.debug("TIFF Compression type was [CCITT T.4] - pixel size was 1");
+                            System.out.println("TIFF Compression type was [CCITT T.4] - pixel size was 1");
                         } else if (pixelSize == 8) {
                             writeParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
                             writeParam.setCompressionType("Deflate");
-                            log.debug("TIFF Compression type was [Deflate] - pixel size was 8");
+                            System.out.println("TIFF Compression type was [Deflate] - pixel size was 8");
                         } else if (pixelSize == 24) {
                             writeParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
                             writeParam.setCompressionType("JPEG");
-                            log.debug("TIFF Compression type was [JPEG] - pixel size was 24");
+                            System.out.println("TIFF Compression type was [JPEG] - pixel size was 24");
                         }
 
                         ImageTypeSpecifier spec = ImageTypeSpecifier.createFromRenderedImage(image);
@@ -191,8 +185,7 @@ public class TIFFManager {
                     baos.close();
                 }
             } catch (IOException e) {
-                // e.printStackTrace();
-                log.fatal("ERROR", e);
+                e.printStackTrace();
                 return null;
             }
         }
@@ -236,15 +229,15 @@ public class TIFFManager {
                         if (pixelSize == 1) {
                             writeParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
                             writeParam.setCompressionType("CCITT T.4");
-                            log.debug("TIFF Compression type was [CCITT T.4] - pixel size was 1");
+                            System.out.println("TIFF Compression type was [CCITT T.4] - pixel size was 1");
                         } else if (pixelSize == 8) {
                             writeParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
                             writeParam.setCompressionType("Deflate");
-                            log.debug("TIFF Compression type was [Deflate] - pixel size was 8");
+                            System.out.println("TIFF Compression type was [Deflate] - pixel size was 8");
                         } else if (pixelSize == 24) {
                             writeParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
                             writeParam.setCompressionType("JPEG");
-                            log.debug("TIFF Compression type was [JPEG] - pixel size was 24");
+                            System.out.println("TIFF Compression type was [JPEG] - pixel size was 24");
                         }
 
                         ImageTypeSpecifier spec = ImageTypeSpecifier.createFromRenderedImage(image);
@@ -261,8 +254,7 @@ public class TIFFManager {
                     baos.close();
                 }
             } catch (IOException e) {
-                // e.printStackTrace();
-                log.fatal("ERROR", e);
+                e.printStackTrace();
                 return null;
             }
         }

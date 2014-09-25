@@ -1,5 +1,8 @@
 package ics.pdf.swing;
 
+import ics.pdf.swing.IcsOracleFormMessages.IcsOracleFormPropertiesMsg;
+
+import java.applet.Applet;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.DisplayMode;
@@ -18,17 +21,12 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
-
-import oracle.forms.properties.ID;
-import oracle.forms.ui.VBean;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
@@ -47,9 +45,8 @@ import eu.gnome.morena.Manager;
  * @author Ibrahim Sawalha
  *
  */
-public class PdfNotesVBean extends VBean implements ActionListener {
-
-    private static Logger log = LogManager.getLogger(PdfNotesVBean.class.getName());
+public class PdfNotesVBean extends Applet implements ActionListener {
+    private static final long serialVersionUID = -1074599859191345830L;
 
     private IcsPdfNotesBean pDFVBean = null;
     private static PdfNotesVBean sf = null;
@@ -62,37 +59,49 @@ public class PdfNotesVBean extends VBean implements ActionListener {
     private final static String STAMP_CORRECT = "StampCorrect";
     private final static String RED_CIRCLE = "RedCircle";
 
-    private final static String PRINT_ENABLED = "printEnabled";
-
-    public final static ID PROPERTIES = ID.registerProperty("PROPERTIES");
+    private String userName;
+    private Date currentDate;
+    private String lang;
 
     private Manager manager = null;
+    private String version = "25_9_14_1326";
 
     public void addText(String value) {
         System.out.println("addText");
         sb.append(value);
     }
 
-    //
-    // display the whole text
-    //
-    public void showPDF() {
-        log.debug("showPDF");
+    public void showPDF(String params) {
+        System.out.println("showPDF(String)-ICSfs jPDF build version:" + version);
+        IcsOracleFormPropertiesMsg ddd = IcsOracleFormMessages.decypherIcsOracleFormPrpertiesMsg(params);
+        System.out.println("incoming properties msg:" + params);
+        System.out.println("properties object:" + ddd);
+        pDFVBean = (IcsPdfNotesBean) getComponent(0);
+        pDFVBean.setProperties(ddd);
+
         BASE64Decoder b64dc = new BASE64Decoder();
         byte[] b;
         try {
             b = b64dc.decodeBuffer(sb.toString());
-            // b = b64dc.decodeBuffer( new ByteArrayInputStream(sb.toString().getBytes("UTF-8")));
-            getPDFNotes().loadPDF(new ByteArrayInputStream(b));
+            if (b.length > 0) {
+                // b = b64dc.decodeBuffer( new ByteArrayInputStream(sb.toString().getBytes("UTF-8")));
+                pDFVBean.loadPDF(new ByteArrayInputStream(b));
+            } else {
+                System.err.println(" --- No Files was loaded in the application");
+                // getPDFNotes().loadPDF("d:/test.pdf");
+            }
         } catch (IOException e) {
-            // TODO
+            e.printStackTrace();
         } catch (PDFException e) {
-            // TODO
+            e.printStackTrace();
         }
+        removeAll();
+        this.add(getPDFNotes(), BorderLayout.CENTER, 0);
+        repaint();
     }
 
     public String getInitSave() {
-        System.out.println("getLength");
+        System.out.println("getInitSave...");
         BASE64Encoder b64en = new BASE64Encoder();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
@@ -113,7 +122,7 @@ public class PdfNotesVBean extends VBean implements ActionListener {
     }
 
     public String getChunk() {
-        System.out.println("getChunk");
+        System.out.println("getChunk...");
         String retstr;
         if (storeSave.length() > position + 32000) {
             retstr = storeSave.substring(position, position + 32000);
@@ -125,6 +134,7 @@ public class PdfNotesVBean extends VBean implements ActionListener {
     }
 
     public static void main(String[] args) {
+        System.out.println("ICSfs jPDFNotes");
         JFrame jf = new JFrame("ICSfs jPDFNotes");
 
         jf.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
@@ -134,10 +144,10 @@ public class PdfNotesVBean extends VBean implements ActionListener {
         jf.setLocationRelativeTo(null);
 
         sf = new PdfNotesVBean();
-        sf.setProperty(PROPERTIES, "MODE=CREATE,PRINT=true,STAMP=1,SIGN=1");
         jf.add(sf);
         jf.setVisible(true);
 
+        // sf.showPDF("MODE=create,PRINT=true,STAMP=1,SIGN=1,USER=test user name, LANG=ar, current_date=01/02/2012");
         for (String arg : args) {
             if (arg.equalsIgnoreCase("-help") || arg.equalsIgnoreCase("-h") || arg.equalsIgnoreCase("-?")) {
                 System.out.println("java com.sun.awc.PDFViewer [flags] [file]");
@@ -147,9 +157,10 @@ public class PdfNotesVBean extends VBean implements ActionListener {
                 fileName = arg;
             }
         }
-        System.out.println(fileName);
 
         jf.addComponentListener(new ComponentAdapter() {
+            String properties = "MODE=create,PRINT=true,STAMP=true,SIGN=true,USER=test user name, LANG=ar, current_date=01/02/2012";
+
             @Override
             public void componentResized(ComponentEvent e) {
                 sf.setLocation(10, 10);
@@ -175,7 +186,8 @@ public class PdfNotesVBean extends VBean implements ActionListener {
                 } catch (IOException f) {
                     // TODO
                 }
-                sf.showPDF();
+                System.out.println("Show it");
+                sf.showPDF(properties);
             }
         });
 
@@ -186,7 +198,9 @@ public class PdfNotesVBean extends VBean implements ActionListener {
      *
      */
     public PdfNotesVBean() {
-        BanksConfig.loadLog4jConfiguration();
+        System.out.println("PdfNotesVBean() ... init");
+        // BanksConfig.loadLog4jConfiguration();
+        BanksConfig.loadConfiguration();
         Configuration.setLogLevel(java.util.logging.Level
             .parse(BanksConfig.getInstance().getString("morena.log.level")));
         @SuppressWarnings("unchecked")
@@ -195,35 +209,9 @@ public class PdfNotesVBean extends VBean implements ActionListener {
         for (String deviceType : deviceTypes) {
             Configuration.addDeviceType(deviceType, true);
         }
-        setLookAndFeel();
         manager = Manager.getInstance();
-        getPDFNotes().setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.gray, 1));
-
-        JButton ftCorrect = new JButton("Free Text");
-        ftCorrect.setActionCommand(FREETEXT_CORRECT);
-        ftCorrect.addActionListener(this);
-        getPDFNotes().getAnnotToolbar().add(ftCorrect);
-
-        JButton rsCorrect = new JButton("Stamp");
-        rsCorrect.setActionCommand(STAMP_CORRECT);
-        rsCorrect.addActionListener(this);
-        getPDFNotes().getAnnotToolbar().add(rsCorrect);
-
-        // Red Circle
-        JButton jbRedCircle = new JButton("RC");
-        jbRedCircle.setActionCommand(RED_CIRCLE);
-        jbRedCircle.addActionListener(this);
-        getPDFNotes().getAnnotToolbar().add(jbRedCircle);
-        getPDFNotes().revalidate();
-
-        JButton jbPrintEnabled = new JButton("Enable Printing?");
-        jbPrintEnabled.setActionCommand(PRINT_ENABLED);
-        jbPrintEnabled.addActionListener(this);
-        getPDFNotes().getAnnotToolbar().add(jbPrintEnabled);
-
-        setLayout(new BorderLayout());
-
-        add(getPDFNotes(), BorderLayout.CENTER);
+        setLookAndFeel();
+        add(getPDFNotes(), BorderLayout.CENTER, 0);
     }
 
     /**
@@ -232,33 +220,25 @@ public class PdfNotesVBean extends VBean implements ActionListener {
      * @param name the name of the file to open
      */
     public void loadDocument(String loadDoc) {
+        System.out.println("loadDocument()...");
         if (loadDoc.startsWith("http:")) {
             try {
                 getPDFNotes().loadPDF(new URL(loadDoc));
             } catch (PDFException e) {
-                log.fatal("ERROR", e);
+
+                e.printStackTrace();
                 System.exit(1);
             } catch (MalformedURLException e) {
-                log.fatal("ERROR", e);
+                e.printStackTrace();
                 System.exit(1);
             }
         } else {
             try {
                 getPDFNotes().loadPDF(loadDoc);
             } catch (PDFException e) {
-                log.fatal("ERROR", e);
+                e.printStackTrace();
                 System.exit(1);
             }
-        }
-    }
-
-    @Override
-    public boolean setProperty(ID property, Object value) {
-        if (property == PROPERTIES) {
-            getPDFNotes().setProperties(IcsOracleFormMessages.decypherIcsOracleFormPrpertiesMsg((String) value));
-            return true;
-        } else {
-            return super.setProperty(property, value);
         }
     }
 
@@ -280,7 +260,7 @@ public class PdfNotesVBean extends VBean implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-        log.debug("---> " + e.getActionCommand());
+        System.out.println("VBean actionPerformed---> " + e.getActionCommand());
         IPDFDocument doc = getPDFNotes().getDocument();
 
         if (doc != null) {
@@ -297,10 +277,9 @@ public class PdfNotesVBean extends VBean implements ActionListener {
                 try {
                     InputStream resource = this.getClass().getClassLoader().getResourceAsStream("check.png");
                     BufferedImage image = ImageIO.read(resource);
-                    // getPDFNotes().startEdit(factory.createRubberStamp(image), true);
                     getPDFNotes().startEdit(factory.createRubberStamp(image), true, true);
                 } catch (IOException e1) {
-                    log.fatal("ERROR", e1);
+                    e1.printStackTrace();
                 }
 
             } else if (e.getActionCommand() == RED_CIRCLE) {
@@ -308,20 +287,36 @@ public class PdfNotesVBean extends VBean implements ActionListener {
                 redCircle.setColor(Color.red);
                 redCircle.setInternalColor(Color.blue);
                 getPDFNotes().startEdit(redCircle, false, false);
-            } else if (e.getActionCommand() == PRINT_ENABLED) {
-                if (getPDFNotes().getToolbar().getjbPrint().isEnabled()) {
-                    getPDFNotes().getToolbar().getjbPrint().setEnabled(false);
-                } else {
-                    getPDFNotes().getToolbar().getjbPrint().setEnabled(true);
-                }
             }
         }
     }
 
     private IcsPdfNotesBean getPDFNotes() {
         if (pDFVBean == null) {
+            System.out.println("getPDFNotes Init...");
             pDFVBean = new IcsPdfNotesBean(manager);
+
+            pDFVBean.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.gray, 1));
+
+            JButton ftCorrect = new JButton("Free Text");
+            ftCorrect.setActionCommand(FREETEXT_CORRECT);
+            ftCorrect.addActionListener(this);
+            pDFVBean.getAnnotToolbar().add(ftCorrect);
+
+            JButton rsCorrect = new JButton("Stamp");
+            rsCorrect.setActionCommand(STAMP_CORRECT);
+            rsCorrect.addActionListener(this);
+            pDFVBean.getAnnotToolbar().add(rsCorrect);
+
+            JButton jbRedCircle = new JButton("RC");
+            jbRedCircle.setActionCommand(RED_CIRCLE);
+            jbRedCircle.addActionListener(this);
+            pDFVBean.getAnnotToolbar().add(jbRedCircle);
+            pDFVBean.revalidate();
+
+            setLayout(new BorderLayout());
         }
+
         return pDFVBean;
     }
 }

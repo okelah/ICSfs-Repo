@@ -1,7 +1,6 @@
 package ics.pdf.swing;
 
 import ics.pdf.swing.action.AcquireBatchImageAction;
-import jPDFNotesSamples.PDFFileFilter;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -45,9 +44,6 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.qoppa.pdf.PDFException;
 import com.qoppa.pdf.PrintSettings;
 import com.qoppa.pdf.annotations.FreeText;
@@ -72,8 +68,6 @@ import eu.gnome.morena.TransferDoneListener;
  */
 public class PdfNotesApplication extends JFrame implements DropTargetListener, ActionListener, TransferDoneListener {
     private static final long serialVersionUID = -1438653878066393492L;
-
-    static Logger log = LogManager.getLogger(PdfNotesApplication.class.getName());
 
     private JPanel jPanel = null;
     private PDFNotesBean pdfNotes = null;
@@ -513,7 +507,7 @@ public class PdfNotesApplication extends JFrame implements DropTargetListener, A
             jmiUndo = new JMenuItem();
             jmiUndo.setText("Undo");
             jmiUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit()
-                    .getMenuShortcutKeyMask()));
+                .getMenuShortcutKeyMask()));
             jmiUndo.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent e) {
                     getPDFNotes().getUndoManager().undo();
@@ -535,10 +529,10 @@ public class PdfNotesApplication extends JFrame implements DropTargetListener, A
             jmiRedo.setText("Redo");
             if (isSystemMac()) {
                 jmiRedo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit()
-                        .getMenuShortcutKeyMask() + InputEvent.SHIFT_DOWN_MASK));
+                    .getMenuShortcutKeyMask() + InputEvent.SHIFT_DOWN_MASK));
             } else {
                 jmiRedo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, Toolkit.getDefaultToolkit()
-                        .getMenuShortcutKeyMask()));
+                    .getMenuShortcutKeyMask()));
             }
 
             jmiRedo.addActionListener(new java.awt.event.ActionListener() {
@@ -701,11 +695,11 @@ public class PdfNotesApplication extends JFrame implements DropTargetListener, A
         // Create file chooser
         JFileChooser fileChooser = new JFileChooser();
 
-        // PDF File filter
-        PDFFileFilter pdfFilter = new PDFFileFilter();
-
-        // Set the filter
-        fileChooser.setFileFilter(pdfFilter);
+        // // PDF File filter
+        // PDFFileFilter pdfFilter = new PDFFileFilter();
+        //
+        // // Set the filter
+        // fileChooser.setFileFilter(pdfFilter);
 
         // Show the JFileChooser
         int rc = fileChooser.showOpenDialog(this);
@@ -883,7 +877,7 @@ public class PdfNotesApplication extends JFrame implements DropTargetListener, A
             jmiActualSize = new JMenuItem();
             jmiActualSize.setText("Actual Size");
             jmiActualSize.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, Toolkit.getDefaultToolkit()
-                    .getMenuShortcutKeyMask()));
+                .getMenuShortcutKeyMask()));
             jmiActualSize.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent e) {
                     try {
@@ -908,7 +902,7 @@ public class PdfNotesApplication extends JFrame implements DropTargetListener, A
             jmiFitToPage = new JMenuItem();
             jmiFitToPage.setText("Fit To Page");
             jmiFitToPage.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_0, Toolkit.getDefaultToolkit()
-                    .getMenuShortcutKeyMask()));
+                .getMenuShortcutKeyMask()));
             jmiFitToPage.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent e) {
                     try {
@@ -932,7 +926,7 @@ public class PdfNotesApplication extends JFrame implements DropTargetListener, A
             jmiFitToWidth = new JMenuItem();
             jmiFitToWidth.setText("Fit To Width");
             jmiFitToWidth.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2, Toolkit.getDefaultToolkit()
-                    .getMenuShortcutKeyMask()));
+                .getMenuShortcutKeyMask()));
             jmiFitToWidth.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent e) {
                     try {
@@ -1188,8 +1182,7 @@ public class PdfNotesApplication extends JFrame implements DropTargetListener, A
                     image = ImageIO.read(new File("yes.png"));
                     pdfNotes.startEdit(factory.createRubberStamp(image), true, true);
                 } catch (IOException e1) {
-                    // e1.printStackTrace();
-                    log.fatal("ERROR", e1);
+                    e1.printStackTrace();
                 }
             } else if (e.getActionCommand() == RED_CIRCLE) {
                 // Circle redCircle = factory.createCircle(null);
@@ -1232,8 +1225,7 @@ public class PdfNotesApplication extends JFrame implements DropTargetListener, A
             }
 
         } catch (Exception e) {
-            // e.printStackTrace();\
-            log.fatal("ERROR", e);
+            e.printStackTrace();
         } finally {
             if (Manager.getInstance() != null) {
                 Manager.getInstance().close();

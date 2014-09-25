@@ -2,6 +2,7 @@ package ics.pdf.swing.action;
 
 import static ics.pdf.swing.BanksConfig.getInstance;
 import ics.pdf.swing.BanksConfig;
+import ics.pdf.swing.util.IconUtil;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -9,11 +10,7 @@ import java.io.File;
 import java.util.List;
 
 import javax.swing.AbstractAction;
-import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import eu.gnome.morena.Device;
 import eu.gnome.morena.Manager;
@@ -22,14 +19,15 @@ import eu.gnome.morena.TransferListener;
 
 public class SetupDeviceAction extends AbstractAction implements TransferListener {
     private static final long serialVersionUID = 1L;
-    private static Logger log = LogManager.getLogger(SetupDeviceAction.class.getName());
 
     private Scanner scanner = null;
     private Manager manager = null;
     private Component parent = null;
 
     public SetupDeviceAction(Manager manager, Component parent) {
-        super("Setup Device", getIcon());
+        super("Setup Device", IconUtil.getSetupDeviceActionIcon());
+        putValue(SHORT_DESCRIPTION, "Setup Device");
+
         this.manager = manager;
         this.parent = parent;
     }
@@ -37,7 +35,7 @@ public class SetupDeviceAction extends AbstractAction implements TransferListene
     public synchronized void actionPerformed(ActionEvent event) {
         try {
             Device device = setupDevice();
-            log.info("Selected Device", device);
+            System.out.println("Selected Device:" + device);
             if (device != null) {
                 if (device instanceof Scanner) {
                     scanner = setupScanner(device);
@@ -45,13 +43,13 @@ public class SetupDeviceAction extends AbstractAction implements TransferListene
                     System.out.println("Scanner is Camera...");
                 }
             } else {
-                log.fatal("No device connected!!!");
+                System.out.println("No device connected!!!");
                 JOptionPane.showMessageDialog(parent, "No device connected!!!", "Error", JOptionPane.ERROR_MESSAGE);
             }
 
         } catch (Throwable exception) {
             JOptionPane.showMessageDialog(parent, exception.toString(), "Error", JOptionPane.ERROR_MESSAGE);
-            log.fatal("ERROR", exception);
+            System.out.println("ERROR" + exception);
         }
     }
 
@@ -60,7 +58,7 @@ public class SetupDeviceAction extends AbstractAction implements TransferListene
     }
 
     public void transferFailed(int code, String message) {
-        log.fatal(message + " [0x" + Integer.toHexString(code) + "]");
+        System.out.println(message + " [0x" + Integer.toHexString(code) + "]");
         setEnabled(true);
         // cancelAction.setEnabled(false);
     }
@@ -70,7 +68,7 @@ public class SetupDeviceAction extends AbstractAction implements TransferListene
     }
 
     private Device setupDevice() {
-        log.info("Setup Scanner");
+        System.out.println("Setup Scanner");
         List<? extends Device> devices = manager.listDevices();
 
         if (devices == null || devices.isEmpty()) {
@@ -84,7 +82,7 @@ public class SetupDeviceAction extends AbstractAction implements TransferListene
     }
 
     private Scanner setupScanner(Device device) {
-        log.info("The Device was found as Scanner");
+        System.out.println("The Device was found as Scanner");
         scanner = (Scanner) device;
 
         if (scanner.setupDevice(parent)) {
@@ -93,11 +91,4 @@ public class SetupDeviceAction extends AbstractAction implements TransferListene
         return scanner;
     }
 
-    private static ImageIcon getIcon() {
-        java.net.URL imgURL = SetupDeviceAction.class.getClassLoader().getResource("scanner-setup.png");
-        if (imgURL != null) {
-            return new ImageIcon(imgURL, null);
-        }
-        return null;
-    }
 }

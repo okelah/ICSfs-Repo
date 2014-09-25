@@ -23,9 +23,6 @@ import javax.media.jai.NullOpImage;
 import javax.media.jai.OpImage;
 import javax.media.jai.PlanarImage;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.sun.media.imageio.plugins.tiff.TIFFImageWriteParam;
 import com.sun.media.jai.codec.FileSeekableStream;
 import com.sun.media.jai.codec.ImageCodec;
@@ -36,8 +33,6 @@ import com.sun.media.jai.codec.TIFFDecodeParam;
 import com.sun.media.jai.codec.TIFFEncodeParam;
 
 public class TIFFManagerTest {
-
-    static Logger log = LogManager.getLogger(TIFFManagerTest.class.getName());
 
     File inputFile = new File("C:\\morena_img.tif");
 
@@ -126,7 +121,7 @@ public class TIFFManagerTest {
 
                     for (BufferedImage image : thisImage) {
                         BufferedImage bimg = new BufferedImage(image.getWidth(null), image.getHeight(null),
-                            BufferedImage.TYPE_BYTE_BINARY);
+                                BufferedImage.TYPE_BYTE_BINARY);
 
                         bimg.createGraphics().drawImage(image, 0, 0, null);
                         ImageTypeSpecifier spec = ImageTypeSpecifier.createFromRenderedImage(bimg);

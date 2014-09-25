@@ -16,7 +16,7 @@ public class ScanSession {
 
     public static final String EOP = ""; // string designating an End of operation
 
-    public void startSession(Device device, int item) throws Exception {
+    public void startSession(Device device, int item) throws Exception { 
         queue = new LinkedBlockingQueue<String>();
         blockedThreadCount = new AtomicInteger(0);
         transferFinished = false;

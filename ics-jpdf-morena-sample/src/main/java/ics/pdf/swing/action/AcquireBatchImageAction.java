@@ -4,6 +4,7 @@ import static ics.pdf.swing.BanksConfig.getInstance;
 import ics.pdf.swing.BanksConfig;
 import ics.pdf.swing.TIFFManager;
 import ics.pdf.swing.morena.ScanSession;
+import ics.pdf.swing.util.IconUtil;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -19,11 +20,7 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
-import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.qoppa.pdf.PDFException;
 import com.qoppa.pdfNotes.PDFNotesBean;
@@ -35,7 +32,6 @@ import eu.gnome.morena.TransferListener;
 
 public class AcquireBatchImageAction extends AbstractAction implements TransferListener {
     private static final long serialVersionUID = 1L;
-    static Logger log = LogManager.getLogger(AcquireBatchImageAction.class.getName());
 
     private Scanner scanner = null;
     private PDFNotesBean pDFNotesBean = null;
@@ -43,7 +39,8 @@ public class AcquireBatchImageAction extends AbstractAction implements TransferL
     private Component parent = null;
 
     public AcquireBatchImageAction(PDFNotesBean pDFNotesBean, Manager manager, Component parent) {
-        super("Scan...", getIcon());
+        super("Scan...", IconUtil.getAcquireBatchImageActionIcon());
+        putValue(SHORT_DESCRIPTION, "Scan Document");
         this.pDFNotesBean = pDFNotesBean;
         this.manager = manager;
         this.parent = parent;
@@ -52,7 +49,7 @@ public class AcquireBatchImageAction extends AbstractAction implements TransferL
     public synchronized void actionPerformed(ActionEvent event) {
         try {
             Device device = setupDevice();
-            log.info("Selected Device", device);
+            System.out.println("Selected Device:" + device);
             List<File> filesToDelete = null;
             List<BufferedImage> images = null;
             if (device != null) {
@@ -67,7 +64,7 @@ public class AcquireBatchImageAction extends AbstractAction implements TransferL
                     scanner.setMode(scannerMode);
 
                     scanner.setResolution(resolution);
-                    log.debug("scanner.setResolution = " + resolution);
+                    System.out.println("scanner.setResolution = " + resolution);
                     int jobPages = getInstance().getInt("job.pages");
                     // find feeder unit
                     int functionalUnit = getInstance().getInt("scanner.functionalUnit");
@@ -114,9 +111,10 @@ public class AcquireBatchImageAction extends AbstractAction implements TransferL
                                 break;
                             }
                         }
-                        log.debug("Scanned Pages [ " + (pageNo) + " ] page");
+                        System.out.println("Scanned Pages [ " + (pageNo) + " ] page");
                         if (filesToDelete.isEmpty()) {
-                            log.debug("Morena Error: [" + session.getErrorCode() + "] " + session.getErrorMessage());
+                            System.out.println("Morena Error: [" + session.getErrorCode() + "] "
+                                    + session.getErrorMessage());
                             JOptionPane
                                     .showMessageDialog(parent, "Feeder is empty", "Error", JOptionPane.ERROR_MESSAGE);
                             setEnabled(true);
@@ -124,50 +122,48 @@ public class AcquireBatchImageAction extends AbstractAction implements TransferL
                         }
 
                     } catch (Exception ex) { // check if error is related to empty ADF
-                        // ex.printStackTrace();
-                        log.fatal("ERROR", ex);
+                        ex.printStackTrace();
                         JOptionPane.showMessageDialog(parent, session.getErrorMessage().toString(), "Error",
                             JOptionPane.ERROR_MESSAGE);
                         if (session.isEmptyFeeder()) {
                             System.out.println("No more sheets in the document feeder");
                         } else {
                             // ex.printStackTrace();
-                            log.fatal("ERROR", ex);
+                            ex.printStackTrace();
                         }
                     }
                 } else {
                     System.out.println("Scanner is Camera...");
-                    log.error("Scanner was found as Camera");
                     JOptionPane.showMessageDialog(parent, "Scanner was found as Camera", "Error",
                         JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                log.info("Scanning completed...");
+                System.out.println("Scanning completed...");
 
                 if (images != null && !images.isEmpty()) {
                     PDFNotesBean tempNotes = null;
                     try {
-                        log.debug("Converting to TIFF...");
+                        System.out.println("Converting to TIFF...");
                         InputStream is = new ByteArrayInputStream(TIFFManager.compressTIFFFileList(imagesFileNames));
                         tempNotes = new PDFNotesBean();
                         File pdfFile = File.createTempFile("Morena_example", ".pdf");
                         tempNotes.loadDocument(is, "tif");
-                        log.debug("Converting to PDF...");
+                        System.out.println("Converting to PDF...");
                         tempNotes.save(tempNotes, "pdf", pdfFile);
-                        log.debug("PDF was created [" + pdfFile.getAbsolutePath() + "] size: "
+                        System.out.println("PDF was created [" + pdfFile.getAbsolutePath() + "] size: "
                                 + (pdfFile.length() / 1024 / 1024) + " Mb");
                         tempNotes.invalidate();
                         is.close();
 
                         pDFNotesBean.loadPDF(new FileInputStream(pdfFile));
-                        log.debug("Finish Loading PDF File [" + pdfFile.getName() + "]");
+                        System.out.println("Finish Loading PDF File [" + pdfFile.getName() + "]");
 
                     } catch (IOException e) {
-                        log.fatal("ERROR", e);
+                        e.printStackTrace();
                     } catch (PDFException e) {
-                        log.fatal("ERROR", e);
+                        e.printStackTrace();
                     } finally {
-                        log.debug("Deleting scanned images ");
+                        System.out.println("Deleting scanned images ");
                         for (File delFile : filesToDelete) {
                             delFile.delete();
                         }
@@ -177,15 +173,15 @@ public class AcquireBatchImageAction extends AbstractAction implements TransferL
                     }
                 }
             } else {
-                log.fatal("No device connected!!!");
+                System.out.println("No device connected!!!");
                 JOptionPane.showMessageDialog(parent, "No device connected!!!", "Error", JOptionPane.ERROR_MESSAGE);
 
             }
 
             setEnabled(true);
         } catch (Throwable exception) {
+            exception.printStackTrace();
             JOptionPane.showMessageDialog(parent, exception.toString(), "Error", JOptionPane.ERROR_MESSAGE);
-            log.fatal("ERROR", exception);
         }
     }
 
@@ -194,7 +190,7 @@ public class AcquireBatchImageAction extends AbstractAction implements TransferL
     }
 
     public void transferFailed(int code, String message) {
-        log.fatal(message + " [0x" + Integer.toHexString(code) + "]");
+        System.out.println(message + " [0x" + Integer.toHexString(code) + "]");
         setEnabled(true);
         // cancelAction.setEnabled(false);
     }
@@ -204,28 +200,28 @@ public class AcquireBatchImageAction extends AbstractAction implements TransferL
     }
 
     private Device setupDevice() {
-        log.debug("Setup Scanner");
+        System.out.println("Setup Scanner");
         List<? extends Device> devices = manager.listDevices();
-        log.debug("Devices Found are:" + devices);
+        System.out.println("Devices Found are:" + devices);
         if (devices == null || devices.isEmpty()) {
             return null;
         }
         String deviceName = (String) getInstance().getProperty("device");
         if (deviceName.equals("-")) {
             Device device = manager.selectDevice(parent);
-            log.debug("NEW Device was selected:" + device.toString());
+            System.out.println("NEW Device was selected:" + device.toString());
             getInstance().setProperty("device", device.toString());
             return device;
         } else {
             for (Device d : devices) {
                 if (d.toString().equals(deviceName)) {
-                    log.debug("OLD Device was found:" + d.toString());
+                    System.out.println("OLD Device was found:" + d.toString());
                     return d;
                 }
             }
 
             // if predefined scanner was not found
-            log.debug("OLD Device was NOT found, setting new Device");
+            System.out.println("OLD Device was NOT found, setting new Device");
             getInstance().setProperty("device", "-");
             getInstance().setProperty("device.setup.ready", false);
             return setupDevice();
@@ -233,7 +229,7 @@ public class AcquireBatchImageAction extends AbstractAction implements TransferL
     }
 
     private Scanner setupScanner(Device device) {
-        log.info("The Device was found as Scanner");
+        System.out.println("The Device was found as Scanner");
         scanner = (Scanner) device;
 
         if (!getInstance().getBoolean("device.setup.ready")) {
@@ -254,17 +250,10 @@ public class AcquireBatchImageAction extends AbstractAction implements TransferL
             } catch (Exception e) {
                 scanner.setFrame(0, 0, 0, 0);
                 // e.printStackTrace();
-                log.fatal("ERROR", e);
+                e.printStackTrace();
             }
         }
         return scanner;
     }
 
-    private static ImageIcon getIcon() {
-        java.net.URL imgURL = AcquireBatchImageAction.class.getClassLoader().getResource("scanner1.png");
-        if (imgURL != null) {
-            return new ImageIcon(imgURL, null);
-        }
-        return null;
-    }
 }

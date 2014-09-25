@@ -1,17 +1,19 @@
 package ics.pdf.swing;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.StringTokenizer;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class IcsOracleFormMessages {
 
-    static Logger log = LogManager.getLogger(IcsOracleFormMessages.class);
+    // lang -> ar / en / fr
+    // current_date format -> dd/mm/yyyy
 
     public static IcsOracleFormPropertiesMsg decypherIcsOracleFormPrpertiesMsg(String msg) {
         String incommingMsg = msg.toUpperCase();
-        StringTokenizer st = new StringTokenizer(incommingMsg.replaceAll("\\s+", ""), ",");
+        // StringTokenizer st = new StringTokenizer(incommingMsg.replaceAll("\\s+", ""), ",");
+        StringTokenizer st = new StringTokenizer(incommingMsg, ",");
 
         IcsOracleFormPropertiesMsg msgObject = new IcsOracleFormMessages().new IcsOracleFormPropertiesMsg();
 
@@ -20,21 +22,32 @@ public class IcsOracleFormMessages {
                 String element = (String) st.nextElement();
                 StringTokenizer newSt = new StringTokenizer(element, "=");
 
-                String key = (String) newSt.nextElement();
+                String key = ((String) newSt.nextElement()).replaceAll("\\s+", "");
                 if (newSt.hasMoreElements()) {
                     String value = (String) newSt.nextElement();
                     if (key.equals(IcsOracleFormPropertiesMsg.MODE)) {
-                        msgObject.setMode(value);
+                        msgObject.setMode(value.replaceAll("\\s+", ""));
                     } else if (key.equals(IcsOracleFormPropertiesMsg.SIGNATURE)) {
-                        msgObject.setSignature(Boolean.valueOf(value));
+                        msgObject.setSignature(Boolean.valueOf(value.replaceAll("\\s+", "")));
                     } else if (key.equals(IcsOracleFormPropertiesMsg.PRINT)) {
-                        msgObject.setPrint(Boolean.valueOf(value));
+                        msgObject.setPrint(Boolean.valueOf(value.replaceAll("\\s+", "")));
                     } else if (key.equals(IcsOracleFormPropertiesMsg.STAMP)) {
-                        msgObject.setStamp(Boolean.valueOf(value));
+                        msgObject.setStamp(Boolean.valueOf(value.replaceAll("\\s+", "")));
+                    } else if (key.equals(IcsOracleFormPropertiesMsg.USER)) {
+                        msgObject.setUserName(value);
+                    } else if (key.equals(IcsOracleFormPropertiesMsg.LANG)) {
+                        msgObject.setLanguage(value.replaceAll("\\s+", ""));
+                    } else if (key.equals(IcsOracleFormPropertiesMsg.CURRENT_DATE)) {
+                        try {
+                            Date currentDate = new SimpleDateFormat("dd/mm/yyyy").parse(value);
+                            msgObject.setCurrentDate(currentDate);
+                        } catch (ParseException e1) {
+                            e1.printStackTrace();
+                        }
                     }
 
                 } else {
-                    log.fatal("ERROR ... key [" + key + "] does not have value");
+                    System.err.println("ERROR ... key [" + key + "] does not have value");
                 }
             }
         } catch (java.util.NoSuchElementException e) {
@@ -49,10 +62,16 @@ public class IcsOracleFormMessages {
         private boolean print = false;
         private boolean stamp = false;
         private boolean signature = false;
+        private String userName;
+        private Date currentDate;
+        private String language = "en";
         static final String MODE = "MODE";
         static final String PRINT = "PRINT";
         static final String STAMP = "STAMP";
         static final String SIGNATURE = "SIGN";
+        static final String USER = "USER";
+        static final String CURRENT_DATE = "CURRENT_DATE";
+        static final String LANG = "LANG";
 
         IcsOracleFormPropertiesMsg() {
         }
@@ -89,10 +108,50 @@ public class IcsOracleFormMessages {
             this.mode = mode;
         }
 
+        public String getUserName() {
+            return userName;
+        }
+
+        public void setUserName(String userName) {
+            this.userName = userName;
+        }
+
+        public Date getCurrentDate() {
+            return currentDate;
+        }
+
+        public void setCurrentDate(Date currentDate) {
+            this.currentDate = currentDate;
+        }
+
+        public String getLanguage() {
+            return language;
+        }
+
+        public void setLanguage(String language) {
+            this.language = language;
+        }
+
         @Override
         public String toString() {
-            return "IcsOracleFormPropertiesMsg [mode=" + mode + ", print=" + print + ", stamp=" + stamp
-                    + ", signature=" + signature + "]";
+            StringBuilder builder = new StringBuilder();
+            builder.append("IcsOracleFormPropertiesMsg [mode=");
+            builder.append(mode);
+            builder.append(", print=");
+            builder.append(print);
+            builder.append(", stamp=");
+            builder.append(stamp);
+            builder.append(", signature=");
+            builder.append(signature);
+            builder.append(", userName=");
+            builder.append(userName);
+            builder.append(", currentDate=");
+            builder.append(currentDate);
+            builder.append(", language=");
+            builder.append(language);
+            builder.append("]");
+            return builder.toString();
         }
+
     }
 }

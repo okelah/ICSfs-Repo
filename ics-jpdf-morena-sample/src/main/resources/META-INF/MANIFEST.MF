@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: Ibrahim.Sawalha
+Build-Jdk: 1.7.0_67
+Extension-Name: com.sun.media.imageio
+Implementation-Title: com.sun.media.imageio
+Implementation-Vendor: Sun Microsystems, Inc.
+Implementation-Version: 1.0_01
+Specification-Title: Java Advanced Imaging Image I/O Tools
+Specification-Version: 1.0-mr
+Permissions: all-permissions
+Codebase: *
+Application-Name: OracleForms
