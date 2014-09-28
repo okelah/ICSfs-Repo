@@ -83,13 +83,18 @@ public class SetupDeviceAction extends AbstractAction implements TransferListene
     }
 
     private Scanner setupScanner(Device device) {
-        System.out.println("The Device was found as Scanner");
-        scanner = (Scanner) device;
+        try {
+            System.out.println("The Device was found as Scanner");
+            scanner = (Scanner) device;
 
-        if (scanner.setupDevice(parent)) {
-            BanksConfig.setupDeviceProperties(scanner);
+            if (scanner.setupDevice(parent)) {
+                BanksConfig.setupDeviceProperties(scanner);
+            }
+            return scanner;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return scanner;
+        return null;
     }
 
 }

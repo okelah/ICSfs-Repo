@@ -59,6 +59,7 @@ public class AcquireBatchImageAction extends AbstractAction implements TransferL
                 filesToDelete = new ArrayList<File>();
                 if (device instanceof Scanner) {
                     scanner = setupScanner(device);
+
                     int resolution = getInstance().getInt("scanner.resolution");
                     int scannerMode = getInstance().getInt("scanner.mode");
 
@@ -84,6 +85,8 @@ public class AcquireBatchImageAction extends AbstractAction implements TransferL
                     // start batch scan
                     try {
                         session.startSession(device, functionalUnit);
+                        // session.startSession(device, scanner.getFunctionalUnit());
+
                         File file = null;
                         while (null != (file = session.getImageFile())) {
                             ++pageNo;
@@ -231,28 +234,32 @@ public class AcquireBatchImageAction extends AbstractAction implements TransferL
 
     private Scanner setupScanner(Device device) {
         System.out.println("The Device was found as Scanner");
-        scanner = (Scanner) device;
+        try {
+            scanner = (Scanner) device;
 
-        if (!getInstance().getBoolean("device.setup.ready")) {
-            if (scanner.setupDevice(parent)) {
-                BanksConfig.setupDeviceProperties(scanner);
+            if (!getInstance().getBoolean("device.setup.ready")) {
+                if (scanner.setupDevice(parent)) {
+                    BanksConfig.setupDeviceProperties(scanner);
+                }
+            } else {
+                scanner.setMode(getInstance().getInt("scanner.mode"));
+                scanner.setResolution(getInstance().getInt("scanner.resolution"));
+                try {
+                    @SuppressWarnings("unchecked")
+                    List scanFrame = (ArrayList) getInstance().getProperty("scanner.scanFrame");
+                    int x = Integer.valueOf((String) scanFrame.get(0));
+                    int y = Integer.valueOf((String) scanFrame.get(1));
+                    int w = Integer.valueOf((String) scanFrame.get(2));
+                    int h = Integer.valueOf((String) scanFrame.get(3));
+                    scanner.setFrame(x, y, w, h);
+                } catch (Exception e) {
+                    scanner.setFrame(0, 0, 0, 0);
+                    // e.printStackTrace();
+                    e.printStackTrace();
+                }
             }
-        } else {
-            scanner.setMode(getInstance().getInt("scanner.mode"));
-            scanner.setResolution(getInstance().getInt("scanner.resolution"));
-            try {
-                @SuppressWarnings("unchecked")
-                List scanFrame = (ArrayList) getInstance().getProperty("scanner.scanFrame");
-                int x = Integer.valueOf((String) scanFrame.get(0));
-                int y = Integer.valueOf((String) scanFrame.get(1));
-                int w = Integer.valueOf((String) scanFrame.get(2));
-                int h = Integer.valueOf((String) scanFrame.get(3));
-                scanner.setFrame(x, y, w, h);
-            } catch (Exception e) {
-                scanner.setFrame(0, 0, 0, 0);
-                // e.printStackTrace();
-                e.printStackTrace();
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return scanner;
     }
