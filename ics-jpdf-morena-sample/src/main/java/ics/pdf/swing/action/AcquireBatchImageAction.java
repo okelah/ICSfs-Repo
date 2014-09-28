@@ -5,6 +5,7 @@ import ics.pdf.swing.BanksConfig;
 import ics.pdf.swing.TIFFManager;
 import ics.pdf.swing.morena.ScanSession;
 import ics.pdf.swing.util.IconUtil;
+import ics.pdf.swing.util.LanguageUtil;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -40,7 +41,7 @@ public class AcquireBatchImageAction extends AbstractAction implements TransferL
 
     public AcquireBatchImageAction(PDFNotesBean pDFNotesBean, Manager manager, Component parent) {
         super("Scan...", IconUtil.getAcquireBatchImageActionIcon());
-        putValue(SHORT_DESCRIPTION, "Scan Document");
+        putValue(SHORT_DESCRIPTION, LanguageUtil.getLabel("ScanDocument"));
         this.pDFNotesBean = pDFNotesBean;
         this.manager = manager;
         this.parent = parent;

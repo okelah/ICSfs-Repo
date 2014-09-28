@@ -3,6 +3,7 @@ package ics.pdf.swing.action;
 import static ics.pdf.swing.BanksConfig.getInstance;
 import ics.pdf.swing.BanksConfig;
 import ics.pdf.swing.util.IconUtil;
+import ics.pdf.swing.util.LanguageUtil;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -26,7 +27,7 @@ public class SetupDeviceAction extends AbstractAction implements TransferListene
 
     public SetupDeviceAction(Manager manager, Component parent) {
         super("Setup Device", IconUtil.getSetupDeviceActionIcon());
-        putValue(SHORT_DESCRIPTION, "Setup Device");
+        putValue(SHORT_DESCRIPTION, LanguageUtil.getLabel("SetupDevice"));
 
         this.manager = manager;
         this.parent = parent;

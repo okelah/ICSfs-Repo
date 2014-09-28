@@ -1,6 +1,7 @@
 package ics.pdf.swing;
 
 import ics.pdf.swing.IcsOracleFormMessages.IcsOracleFormPropertiesMsg;
+import ics.pdf.swing.util.LanguageUtil;
 
 import java.applet.Applet;
 import java.awt.BorderLayout;
@@ -22,6 +23,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
@@ -61,7 +63,7 @@ public class PdfNotesVBean extends Applet implements ActionListener {
 
     private String userName;
     private Date currentDate;
-    private String lang;
+    private String userLanguage;
 
     private Manager manager = null;
     private String version = "25_9_14_1353";
@@ -75,6 +77,11 @@ public class PdfNotesVBean extends Applet implements ActionListener {
         IcsOracleFormPropertiesMsg ddd = IcsOracleFormMessages.decypherIcsOracleFormPrpertiesMsg(params);
         System.out.println("incoming properties msg:" + params);
         System.out.println("properties object:" + ddd);
+        Locale.setDefault(new Locale(ddd.getLanguage()));
+
+        System.out.println(LanguageUtil.getLabel("Print"));
+
+        setUserLanguage(ddd.getLanguage());
         pDFVBean = (IcsPdfNotesBean) getComponent(0);
         pDFVBean.setProperties(ddd);
 
@@ -87,7 +94,7 @@ public class PdfNotesVBean extends Applet implements ActionListener {
                 pDFVBean.loadPDF(new ByteArrayInputStream(b));
             } else {
                 System.err.println(" --- No Files was loaded in the application");
-                // getPDFNotes().loadPDF("d:/test.pdf");
+                getPDFNotes().loadPDF("d:/test.pdf");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -121,7 +128,6 @@ public class PdfNotesVBean extends Applet implements ActionListener {
     }
 
     public String getChunk() {
-        System.out.println("getChunk...");
         String retstr;
         if (storeSave.length() > position + 32000) {
             retstr = storeSave.substring(position, position + 32000);
@@ -201,16 +207,18 @@ public class PdfNotesVBean extends Applet implements ActionListener {
         // BanksConfig.loadLog4jConfiguration();
         BanksConfig.loadConfiguration();
         Configuration.setLogLevel(java.util.logging.Level
-            .parse(BanksConfig.getInstance().getString("morena.log.level")));
+                .parse(BanksConfig.getInstance().getString("morena.log.level")));
         @SuppressWarnings("unchecked")
         ArrayList<String> deviceTypes = (ArrayList<String>) BanksConfig.getInstance()
-        .getProperty("morena.device.types");
+                .getProperty("morena.device.types");
         for (String deviceType : deviceTypes) {
             Configuration.addDeviceType(deviceType, true);
         }
         manager = Manager.getInstance();
         setLookAndFeel();
+        Locale.setDefault(new Locale("en"));
         add(getPDFNotes(), BorderLayout.CENTER, 0);
+        showPDF("MODE=create,PRINT=0,STAMP=0,SIGN=0,USER=test user name, LANG=ar, current_date=01/02/2012");
     }
 
     /**
@@ -317,5 +325,13 @@ public class PdfNotesVBean extends Applet implements ActionListener {
         }
 
         return pDFVBean;
+    }
+
+    public String getUserLanguage() {
+        return userLanguage;
+    }
+
+    public void setUserLanguage(String userLanguage) {
+        this.userLanguage = userLanguage;
     }
 }

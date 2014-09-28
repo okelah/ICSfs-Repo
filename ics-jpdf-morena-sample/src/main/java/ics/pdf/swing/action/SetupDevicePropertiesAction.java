@@ -3,6 +3,7 @@ package ics.pdf.swing.action;
 import static ics.pdf.swing.BanksConfig.getInstance;
 import ics.pdf.swing.BanksConfig;
 import ics.pdf.swing.util.IconUtil;
+import ics.pdf.swing.util.LanguageUtil;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -26,8 +27,7 @@ public class SetupDevicePropertiesAction extends AbstractAction implements Trans
 
     public SetupDevicePropertiesAction(Manager manager, Component parent) {
         super("Setup Device Prperties", IconUtil.getSetupDevicePropertiesActionIcon());
-        putValue(SHORT_DESCRIPTION, "Setup Device Prperties");
-        putValue(NAME, "Setup Device Prperties");
+        putValue(SHORT_DESCRIPTION, LanguageUtil.getLabel("ScannerProperties"));
         this.manager = manager;
         this.parent = parent;
     }

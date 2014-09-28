@@ -4,6 +4,7 @@ import ics.pdf.swing.IcsOracleFormMessages.IcsOracleFormPropertiesMsg;
 import ics.pdf.swing.action.AcquireBatchImageAction;
 import ics.pdf.swing.action.SetupDeviceAction;
 import ics.pdf.swing.action.SetupDevicePropertiesAction;
+import ics.pdf.swing.util.FillLabels;
 import ics.pdf.swing.util.IconUtil;
 
 import java.awt.Color;
@@ -42,15 +43,12 @@ public class IcsPdfNotesBean extends PDFNotesBean implements IDocumentListener, 
     public static String MODE_EDIT = "EDIT";
     public static String MODE_CREATE = "CREATE";
 
-    private static String testAction = "TEST-ACTION";
-
     private String userName;
     private Date currentDate;
+    @SuppressWarnings("unused")
     private Manager manager;
 
     private String selectedMode = "---";
-
-    private IcsOracleFormPropertiesMsg properties;
 
     private AcquireBatchImageAction acquireBatchImageAction;
     private SetupDeviceAction setupDeviceAction;
@@ -62,9 +60,10 @@ public class IcsPdfNotesBean extends PDFNotesBean implements IDocumentListener, 
         getAnnotToolbar().getjbAttachFile().setVisible(false);
 
         attachFileButton = new JButton(IconUtil.getAttachementIcon());
-        attachFileButton.setToolTipText("Attach File");
+        attachFileButton.setName("AttachFile");
         attachFileButton.setActionCommand("AttachFile");
         attachFileButton.addActionListener(this);
+        FillLabels.setToolTipText(attachFileButton);
         getAnnotToolbar().add(attachFileButton);
 
         AnnotationTools.setFlatteningEnabled(false);
@@ -82,12 +81,14 @@ public class IcsPdfNotesBean extends PDFNotesBean implements IDocumentListener, 
         getToolbar().add(setupDeviceAction);
         getToolbar().add(setupDevicePropertiesAction);
 
+        FillLabels.fillPDFNotesBean(this);
     }
 
     @Override
     public void startEdit(Annotation annot, boolean useDefault, boolean isSticky) {
         // Call PDFNotesBean to set its own properties
         super.startEdit(annot, true, isSticky);
+        System.out.println("Start Edit :" + annot.getCreator());
 
         if (annot instanceof Text) {
             Text t = (Text) annot;
@@ -201,7 +202,6 @@ public class IcsPdfNotesBean extends PDFNotesBean implements IDocumentListener, 
     }
 
     public void setProperties(IcsOracleFormPropertiesMsg properties) {
-        this.properties = properties;
         System.out.println("NotesBean setProperties:" + properties);
         setPrintEnabled(properties.isPrint());
         setStampEnabled(properties.isStamp());
@@ -221,7 +221,6 @@ public class IcsPdfNotesBean extends PDFNotesBean implements IDocumentListener, 
         setupDevicePropertiesAction.setEnabled(true);
         getThumbnailPanelNotes().enableEditing(true);
         AnnotationTools.setDeleteEnabled(true);
-        getEditToolbar().setVisible(true);
 
         if (mode.equals(MODE_EDIT)) {
             getToolbar().getjbOpen().setEnabled(false);
@@ -236,14 +235,14 @@ public class IcsPdfNotesBean extends PDFNotesBean implements IDocumentListener, 
             setupDeviceAction.setEnabled(true);
             setupDevicePropertiesAction.setEnabled(true);
         } else { // MODE_VIEW
-            getToolbar().getjbOpen().setEnabled(false);
-            getEditToolbar().setVisible(false);
             acquireBatchImageAction.setEnabled(false);
             setupDeviceAction.setEnabled(false);
             setupDevicePropertiesAction.setEnabled(false);
+
+            getToolbar().getjbOpen().setEnabled(false);
+            getAnnotToolbar().setVisible(false);
             getThumbnailPanelNotes().enableEditing(false); //
             AnnotationTools.setDeleteEnabled(false);//
-
             AnnotationTools.setReviewEnabled(false);
             AnnotationTools.setContextMenuEnabled(false);
             SignatureTool.setAllowSign(false);
@@ -265,11 +264,13 @@ public class IcsPdfNotesBean extends PDFNotesBean implements IDocumentListener, 
     @Override
     public void documentChanged(DocumentEvent de) {
         try {
-            System.out.println("doc changed " + de.getEventType());
             if (de.getObject() instanceof Text) {
+                System.out.println("Note was changed: " + de.getEventType());
                 ((Text) de.getObject()).setModifiedDate(getCurrentDate());
+
+                System.out.println("Note Creator: " + ((Text) de.getObject()).getContents());
+                System.out.println("Note Creator: " + ((Text) de.getObject()).getCreator());
             }
-            // System.out.println("getPageIndex() " + de.getPageIndex());
         } catch (Exception exe) {
             System.err.println("docchange error");
         }
@@ -298,4 +299,25 @@ public class IcsPdfNotesBean extends PDFNotesBean implements IDocumentListener, 
         this.currentDate = currentDate;
     }
 
+    @Override
+    public void deselectAnnotation(Annotation annot) {
+        System.out.println("deselectAnnotation - Creator: " + annot.getCreator());
+        System.out.println("deselectAnnotation - Name: " + annot.getName());
+        if (!annot.getCreator().equals(getUserName())) {
+            annot.setLocked(true);
+            annot.setReadOnly(true);
+        }
+        super.deselectAnnotation(annot);
+    }
+
+    @Override
+    public void selectAnnotation(Annotation annot) {
+        System.out.println("selectAnnotation - Creator: " + annot.getCreator());
+        System.out.println("selectAnnotation - Name: " + annot.getName());
+        if (!annot.getCreator().equals(getUserName())) {
+            annot.setLocked(true);
+            annot.setReadOnly(true);
+        }
+        super.deselectAnnotation(annot);
+    }
 }
