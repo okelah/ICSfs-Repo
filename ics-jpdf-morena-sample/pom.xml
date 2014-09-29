@@ -137,7 +137,7 @@
 							<archive>
 								<manifest>
 									<addClasspath>false</addClasspath>
-									<mainClass>ics.pdf.swing.PdfNotesVBean</mainClass>
+									<!-- mainClass>ics.pdf.swing.PdfNotesVBean</mainClass -->
 								</manifest>
 								<manifestEntries>
 									<Implementation-Title>com.sun.media.imageio</Implementation-Title>
@@ -162,6 +162,35 @@
 							</execution>
 						</executions>
 					</plugin>
+
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jarsigner-plugin</artifactId>
+						<version>1.2</version>
+						<executions>
+							<execution>
+								<id>sign</id>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>verify</id>
+								<goals>
+									<goal>verify</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<keystore>sign\ICSFS.p12</keystore>
+							<alias>
+	"international computer systems (london) ltd's comodo ca limited id"</alias>
+							<storepass>icsfs1234</storepass>
+							<keypass>icsfs1234</keypass>
+							<storetype>pkcs12</storetype>
+						</configuration>
+					</plugin>
+
 				</plugins>
 			</build>
 		</profile>

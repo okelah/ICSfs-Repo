@@ -1,33 +1,23 @@
 package ics.pdf.swing;
 
 import ics.pdf.swing.IcsOracleFormMessages.IcsOracleFormPropertiesMsg;
-import ics.pdf.swing.util.LanguageUtil;
 
 import java.applet.Applet;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.DisplayMode;
-import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Locale;
 
 import javax.imageio.ImageIO;
-import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.UIManager;
 
 import sun.misc.BASE64Decoder;
@@ -51,9 +41,7 @@ public class PdfNotesVBean extends Applet implements ActionListener {
     private static final long serialVersionUID = -1074599859191345830L;
 
     private IcsPdfNotesBean pDFVBean = null;
-    private static PdfNotesVBean sf = null;
-    private static String fileName = null;
-    private static StringBuffer sb = new StringBuffer();
+    protected static StringBuffer sb = new StringBuffer();
     private static String storeSave = null;
     private static int position = 0;
 
@@ -61,12 +49,10 @@ public class PdfNotesVBean extends Applet implements ActionListener {
     private final static String STAMP_CORRECT = "StampCorrect";
     private final static String RED_CIRCLE = "RedCircle";
 
-    private String userName;
-    private Date currentDate;
     private String userLanguage;
 
     private Manager manager = null;
-    private String version = "25_9_14_1353";
+    private String version = "29-09-14-11,05";
 
     public void addText(String value) {
         sb.append(value);
@@ -74,27 +60,34 @@ public class PdfNotesVBean extends Applet implements ActionListener {
 
     public void showPDF(String params) {
         System.out.println("showPDF(String)-ICSfs jPDF build version:" + version);
-        IcsOracleFormPropertiesMsg ddd = IcsOracleFormMessages.decypherIcsOracleFormPrpertiesMsg(params);
+        IcsOracleFormPropertiesMsg message = IcsOracleFormMessages.decypherIcsOracleFormPrpertiesMsg(params);
         System.out.println("incoming properties msg:" + params);
-        System.out.println("properties object:" + ddd);
-        Locale.setDefault(new Locale(ddd.getLanguage()));
+        System.out.println("properties object:" + message);
+        Locale.setDefault(new Locale(message.getLanguage()));
 
-        System.out.println(LanguageUtil.getLabel("Print"));
+        setUserLanguage(message.getLanguage());
 
-        setUserLanguage(ddd.getLanguage());
-        pDFVBean = (IcsPdfNotesBean) getComponent(0);
-        pDFVBean.setProperties(ddd);
+        try {
+            setPDFNotes((IcsPdfNotesBean) this.getComponent(0));
+            remove(this.getComponent(0));
+        } catch (ArrayIndexOutOfBoundsException e) {
+            // ignore
+        }
+
+        getPDFNotes().setProperties(message);
+        getPDFNotes().setDocument(null);
 
         BASE64Decoder b64dc = new BASE64Decoder();
         byte[] b;
         try {
             b = b64dc.decodeBuffer(sb.toString());
-            if (b.length > 0) {
-                // b = b64dc.decodeBuffer( new ByteArrayInputStream(sb.toString().getBytes("UTF-8")));
-                pDFVBean.loadPDF(new ByteArrayInputStream(b));
+            if (b.length > 0 && !message.getMode().equals(IcsPdfNotesBean.MODE_CREATE)) {
+                // b = b64dc.decodeBuffer(new ByteArrayInputStream(sb.toString().getBytes("UTF-8")));
+                getPDFNotes().loadPDF(new ByteArrayInputStream(b));
             } else {
                 System.err.println(" --- No Files was loaded in the application");
-                getPDFNotes().loadPDF("d:/test.pdf");
+                // TODO: uncomment for testing
+                // getPDFNotes().loadPDF("d:/test.pdf");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -111,19 +104,12 @@ public class PdfNotesVBean extends Applet implements ActionListener {
         BASE64Encoder b64en = new BASE64Encoder();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
-            System.out.println("baos");
             getPDFNotes().saveDocument(baos);
-            System.out.println(baos.size());
-
             storeSave = b64en.encodeBuffer(baos.toByteArray());
             position = 0;
-            System.out.println("test.length" + storeSave.length());
         } catch (IOException e) {
-            // TODO
         } catch (PDFException e) {
-            // TODO
         }
-
         return "" + storeSave.length();
     }
 
@@ -138,94 +124,34 @@ public class PdfNotesVBean extends Applet implements ActionListener {
         return (retstr);
     }
 
-    public static void main(String[] args) {
-        System.out.println("ICSfs jPDFNotes");
-        JFrame jf = new JFrame("ICSfs jPDFNotes");
-
-        jf.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
-
-        DisplayMode dm = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode();
-        jf.setSize((int) Math.min(1024, dm.getWidth() * 0.90), (int) Math.min(768, dm.getHeight() * 0.90));
-        jf.setLocationRelativeTo(null);
-
-        sf = new PdfNotesVBean();
-        jf.add(sf);
-        jf.setVisible(true);
-
-        // sf.showPDF("MODE=create,PRINT=true,STAMP=1,SIGN=1,USER=test user name, LANG=ar, current_date=01/02/2012");
-        for (String arg : args) {
-            if (arg.equalsIgnoreCase("-help") || arg.equalsIgnoreCase("-h") || arg.equalsIgnoreCase("-?")) {
-                System.out.println("java com.sun.awc.PDFViewer [flags] [file]");
-                System.out.println("flags: [-noThumb] [-help or -h or -?]");
-                System.exit(0);
-            } else {
-                fileName = arg;
-            }
-        }
-
-        jf.addComponentListener(new ComponentAdapter() {
-            String properties = "MODE=create,PRINT=true,STAMP=true,SIGN=true,USER=test user name, LANG=ar, current_date=01/02/2012";
-
-            @Override
-            public void componentResized(ComponentEvent e) {
-                sf.setLocation(10, 10);
-            }
-
-            @Override
-            public void componentShown(ComponentEvent e) {
-                sf.setLocation(10, 10);
-                // Load an initial document
-                /*
-                 * if (fileName == null) { System.out.println("Help!"); } else { sf.loadDocument(fileName); }
-                 */
-                FileInputStream fin;
-                try {
-                    fin = new FileInputStream("c://temp//oid.txt");
-                    int ch;
-                    while ((ch = fin.read()) != -1) {
-                        sf.sb.append((char) ch);
-                    }
-                    fin.close();
-                } catch (FileNotFoundException f) {
-                    // TODO
-                } catch (IOException f) {
-                    // TODO
-                }
-                System.out.println("Show it");
-                sf.showPDF(properties);
-            }
-        });
-
-    }
-
     /**
      * This method initializes
      *
      */
     public PdfNotesVBean() {
-        System.out.println("PdfNotesVBean() ... init");
+        System.out.println("PdfNotesVBean() ... init version:" + version);
         // BanksConfig.loadLog4jConfiguration();
-        BanksConfig.loadConfiguration();
-        Configuration.setLogLevel(java.util.logging.Level
-                .parse(BanksConfig.getInstance().getString("morena.log.level")));
-        @SuppressWarnings("unchecked")
-        ArrayList<String> deviceTypes = (ArrayList<String>) BanksConfig.getInstance()
-                .getProperty("morena.device.types");
-        for (String deviceType : deviceTypes) {
-            Configuration.addDeviceType(deviceType, true);
+        try {
+            BanksConfig.loadConfiguration();
+            Configuration.setLogLevel(java.util.logging.Level.parse(BanksConfig.getInstance().getString(
+                    "morena.log.level")));
+            @SuppressWarnings("unchecked")
+            ArrayList<String> deviceTypes = (ArrayList<String>) BanksConfig.getInstance().getProperty(
+                    "morena.device.types");
+            for (String deviceType : deviceTypes) {
+                Configuration.addDeviceType(deviceType, true);
+            }
+            manager = Manager.getInstance();
+            setLookAndFeel();
+            setLayout(new BorderLayout());
+            Locale.setDefault(new Locale("en"));
+            // uncomment this for testing only
+            // showPDF("MODE=edit,PRINT=1,STAMP=1,SIGN=1,USER=test user name, LANG=ar, current_date=01/02/2012");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        manager = Manager.getInstance();
-        setLookAndFeel();
-        Locale.setDefault(new Locale("en"));
-        add(getPDFNotes(), BorderLayout.CENTER, 0);
-        showPDF("MODE=create,PRINT=0,STAMP=0,SIGN=0,USER=test user name, LANG=ar, current_date=01/02/2012");
     }
 
-    /**
-     * Open a local file, given a string filename
-     *
-     * @param name the name of the file to open
-     */
     public void loadDocument(String loadDoc) {
         System.out.println("loadDocument()...");
         if (loadDoc.startsWith("http:")) {
@@ -250,7 +176,6 @@ public class PdfNotesVBean extends Applet implements ActionListener {
     }
 
     private static void setLookAndFeel() {
-        // Set the look and feel
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             if (UIManager.getSystemLookAndFeelClassName() != null
@@ -298,30 +223,30 @@ public class PdfNotesVBean extends Applet implements ActionListener {
         }
     }
 
+    private void setPDFNotes(IcsPdfNotesBean pDFVBean) {
+        this.pDFVBean = pDFVBean;
+    }
+
     private IcsPdfNotesBean getPDFNotes() {
         if (pDFVBean == null) {
-            System.out.println("getPDFNotes Init...");
+            System.out.println("getPDFNotes Init... pDFVBean == null");
             pDFVBean = new IcsPdfNotesBean(manager);
 
-            pDFVBean.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.gray, 1));
-
-            JButton ftCorrect = new JButton("Free Text");
-            ftCorrect.setActionCommand(FREETEXT_CORRECT);
-            ftCorrect.addActionListener(this);
-            pDFVBean.getAnnotToolbar().add(ftCorrect);
-
-            JButton rsCorrect = new JButton("Stamp");
-            rsCorrect.setActionCommand(STAMP_CORRECT);
-            rsCorrect.addActionListener(this);
-            pDFVBean.getAnnotToolbar().add(rsCorrect);
-
-            JButton jbRedCircle = new JButton("RC");
-            jbRedCircle.setActionCommand(RED_CIRCLE);
-            jbRedCircle.addActionListener(this);
-            pDFVBean.getAnnotToolbar().add(jbRedCircle);
-            pDFVBean.revalidate();
-
-            setLayout(new BorderLayout());
+            // JButton ftCorrect = new JButton("Free Text");
+            // ftCorrect.setActionCommand(FREETEXT_CORRECT);
+            // ftCorrect.addActionListener(this);
+            // pDFVBean.getAnnotToolbar().add(ftCorrect);
+            //
+            // JButton rsCorrect = new JButton("Stamp");
+            // rsCorrect.setActionCommand(STAMP_CORRECT);
+            // rsCorrect.addActionListener(this);
+            // pDFVBean.getAnnotToolbar().add(rsCorrect);
+            //
+            // JButton jbRedCircle = new JButton("RC");
+            // jbRedCircle.setActionCommand(RED_CIRCLE);
+            // jbRedCircle.addActionListener(this);
+            // pDFVBean.getAnnotToolbar().add(jbRedCircle);
+            // pDFVBean.revalidate();
         }
 
         return pDFVBean;
@@ -333,5 +258,9 @@ public class PdfNotesVBean extends Applet implements ActionListener {
 
     public void setUserLanguage(String userLanguage) {
         this.userLanguage = userLanguage;
+    }
+
+    public void exitApplet() {
+        System.exit(0);
     }
 }

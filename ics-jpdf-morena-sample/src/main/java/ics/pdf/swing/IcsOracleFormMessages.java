@@ -28,11 +28,11 @@ public class IcsOracleFormMessages {
                     if (key.equals(IcsOracleFormPropertiesMsg.MODE)) {
                         msgObject.setMode(value.replaceAll("\\s+", ""));
                     } else if (key.equals(IcsOracleFormPropertiesMsg.SIGNATURE)) {
-                        msgObject.setSignature(Boolean.valueOf(value.replaceAll("\\s+", "")));
+                        msgObject.setSignature(getBooleanValue(value));
                     } else if (key.equals(IcsOracleFormPropertiesMsg.PRINT)) {
-                        msgObject.setPrint(Boolean.valueOf(value.replaceAll("\\s+", "")));
+                        msgObject.setPrint(getBooleanValue(value));
                     } else if (key.equals(IcsOracleFormPropertiesMsg.STAMP)) {
-                        msgObject.setStamp(Boolean.valueOf(value.replaceAll("\\s+", "")));
+                        msgObject.setStamp(getBooleanValue(value));
                     } else if (key.equals(IcsOracleFormPropertiesMsg.USER)) {
                         msgObject.setUserName(value);
                     } else if (key.equals(IcsOracleFormPropertiesMsg.LANG)) {
@@ -55,6 +55,17 @@ public class IcsOracleFormMessages {
         }
 
         return msgObject;
+    }
+
+    private static boolean getBooleanValue(String value) {
+        if (value == null || value.equals("")) {
+            return false;
+        }
+        String v = value.replaceAll("\\s+", ""); // remove spaces
+        if (v.equals("1") || v.equalsIgnoreCase("true")) {
+            return true;
+        }
+        return false;
     }
 
     public class IcsOracleFormPropertiesMsg {

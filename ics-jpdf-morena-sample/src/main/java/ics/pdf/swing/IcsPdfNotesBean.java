@@ -82,6 +82,12 @@ public class IcsPdfNotesBean extends PDFNotesBean implements IDocumentListener, 
         getToolbar().add(setupDevicePropertiesAction);
 
         FillLabels.fillPDFNotesBean(this);
+        getAttachmentPanel().setActive(true);
+        getAttachmentPanel().setPaneVisible(true);
+
+        getCommentPanel().setActive(true);
+        getCommentPanel().setPaneVisible(true);
+
     }
 
     @Override
@@ -107,6 +113,7 @@ public class IcsPdfNotesBean extends PDFNotesBean implements IDocumentListener, 
     public void actionPerformed(ActionEvent e) {
         try {
             System.out.println("---> ActionID: " + e.getID() + " ActionCommand: " + e.getActionCommand());
+
             IPDFDocument doc = getDocument();
             if (doc == null) {
                 if (e.getActionCommand().equals("AttachFile")) {
@@ -224,13 +231,13 @@ public class IcsPdfNotesBean extends PDFNotesBean implements IDocumentListener, 
 
         if (mode.equals(MODE_EDIT)) {
             getToolbar().getjbOpen().setEnabled(false);
-
+            getAnnotToolbar().setVisible(true);
             acquireBatchImageAction.setEnabled(false);
             setupDeviceAction.setEnabled(false);
             setupDevicePropertiesAction.setEnabled(false);
         } else if (mode.equals(MODE_CREATE)) {
             getToolbar().getjbOpen().setEnabled(true);
-
+            getAnnotToolbar().setVisible(true);
             acquireBatchImageAction.setEnabled(true);
             setupDeviceAction.setEnabled(true);
             setupDevicePropertiesAction.setEnabled(true);
@@ -302,7 +309,6 @@ public class IcsPdfNotesBean extends PDFNotesBean implements IDocumentListener, 
     @Override
     public void deselectAnnotation(Annotation annot) {
         System.out.println("deselectAnnotation - Creator: " + annot.getCreator());
-        System.out.println("deselectAnnotation - Name: " + annot.getName());
         if (!annot.getCreator().equals(getUserName())) {
             annot.setLocked(true);
             annot.setReadOnly(true);
@@ -320,4 +326,20 @@ public class IcsPdfNotesBean extends PDFNotesBean implements IDocumentListener, 
         }
         super.deselectAnnotation(annot);
     }
+
+    // @Override
+    // public void loadPDF(InputStream in) {
+    // try {
+    // super.loadPDF(in);
+    // } catch (PDFException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+    //
+    // getAttachmentPanel().setActive(true);
+    // getAttachmentPanel().setPaneVisible(true);
+    // getCommentPanel().setActive(true);
+    // getCommentPanel().setPaneVisible(true);
+    //
+    // }
 }
