@@ -144,17 +144,6 @@ public class IcsPdfNotesBean extends PDFNotesBean implements IDocumentListener, 
                     t.setLocked(true);
                     t.setBorderWidth(200);
 
-                    // StickyNoteTool.setDefaultProperties(t);
-                    // StickyNoteTool.setDefaultTransparency(ERROR);
-                    // StickyNoteTool.setDefaultColor(Color.BLUE);
-                    // StickyNoteTool.setShowPropDialog(true);
-                    // StickyNoteTool.setToolSticky(true);
-                    //
-
-                    // AnnotationTools.setAuthorEditable(false);
-                    // AnnotationTools.setContextMenuEnabled(false);
-                    // AnnotationTools.setDeleteEnabled(false);
-                    // AnnotationTools.setReviewEnabled(false);
                 } else if (e.getActionCommand().equals("Save")) {
                     try {
                         getDocument().getDocumentInfo().setModifiedDate(getCurrentDate());
@@ -327,19 +316,4 @@ public class IcsPdfNotesBean extends PDFNotesBean implements IDocumentListener, 
         super.deselectAnnotation(annot);
     }
 
-    // @Override
-    // public void loadPDF(InputStream in) {
-    // try {
-    // super.loadPDF(in);
-    // } catch (PDFException e) {
-    // // TODO Auto-generated catch block
-    // e.printStackTrace();
-    // }
-    //
-    // getAttachmentPanel().setActive(true);
-    // getAttachmentPanel().setPaneVisible(true);
-    // getCommentPanel().setActive(true);
-    // getCommentPanel().setPaneVisible(true);
-    //
-    // }
 }

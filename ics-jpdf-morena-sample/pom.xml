@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ics-pdf</groupId>
 	<artifactId>ics-jpdf-morena-sample</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<packaging>jar</packaging>
 
 	<name>ICS pdf samples based on jPDFNotesSamples</name>
@@ -115,6 +115,17 @@
 			<version>1.10</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>2.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.0.2</version>
+		</dependency>
+
 	</dependencies>
 
 	<profiles>
@@ -140,12 +151,17 @@
 									<!-- mainClass>ics.pdf.swing.PdfNotesVBean</mainClass -->
 								</manifest>
 								<manifestEntries>
+									<Extension-Name>com.sun.media.imageio</Extension-Name>
 									<Implementation-Title>com.sun.media.imageio</Implementation-Title>
-									<Implementation-Version>1.0_01</Implementation-Version>
+									<Implementation-Version>${version}</Implementation-Version>
 									<Implementation-Vendor>Sun Microsystems, Inc.</Implementation-Vendor>
 									<Specification-Title>Java Advanced Imaging Image I/O Tools</Specification-Title>
 									<Specification-Version>1.0-mr</Specification-Version>
-									<Extension-Name>com.sun.media.imageio</Extension-Name>
+									<Permissions>all-permissions</Permissions>
+									<Codebase>*</Codebase>
+									<Application-Name>OracleForms</Application-Name>
+									<Implementation-Build>${version}</Implementation-Build>
+									<Build-Date>${maven.build.timestamp}</Build-Date>
 								</manifestEntries>
 							</archive>
 							<descriptorRefs>
@@ -162,7 +178,6 @@
 							</execution>
 						</executions>
 					</plugin>
-
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-jarsigner-plugin</artifactId>
@@ -184,13 +199,13 @@
 						<configuration>
 							<keystore>sign\ICSFS.p12</keystore>
 							<alias>
-	"international computer systems (london) ltd's comodo ca limited id"</alias>
+								"international computer systems (london) ltd's comodo ca limited id"
+							</alias>
 							<storepass>icsfs1234</storepass>
 							<keypass>icsfs1234</keypass>
 							<storetype>pkcs12</storetype>
 						</configuration>
 					</plugin>
-
 				</plugins>
 			</build>
 		</profile>
@@ -216,7 +231,7 @@
 							<archive>
 								<manifestEntries>
 									<Implementation-Title>com.sun.media.imageio</Implementation-Title>
-									<Implementation-Version>1.0_01</Implementation-Version>
+									<Implementation-Version>${version}</Implementation-Version>
 									<Implementation-Vendor>Sun Microsystems, Inc.</Implementation-Vendor>
 									<Specification-Title>Java Advanced Imaging Image I/O Tools</Specification-Title>
 									<Specification-Version>1.0-mr</Specification-Version>

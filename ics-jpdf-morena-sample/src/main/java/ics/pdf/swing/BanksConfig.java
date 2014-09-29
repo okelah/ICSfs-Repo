@@ -12,6 +12,7 @@ import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
 import eu.gnome.morena.Scanner;
 
 public class BanksConfig {
+    // private static Logger log = LogManager.getLogger(BanksConfig.class.getName());
 
     private static PropertiesConfiguration config = null;
 
@@ -37,7 +38,7 @@ public class BanksConfig {
                 config.setProperty("scanner.functionalUnit", -1);
                 config.setProperty("scanner.scanFrame", new int[] { 0, 0, 0, 0 });
                 config.setProperty("morena.device.types", new String[] { ".*HP.*", ".*hp.*", ".*canojet.*",
-                        ".*officejet.*" });
+                ".*officejet.*" });
                 config.setProperty("morena.log.level", Level.OFF);
 
                 StringBuffer footer = new StringBuffer(
@@ -96,4 +97,25 @@ public class BanksConfig {
         setProperty("scanner.SupportedResolutions", scanner.getSupportedResolutions());
     }
 
+    // public static void loadLog4jConfiguration() {
+    // try {
+    // File logConfigFile = new File(logFile);
+    // if (!logConfigFile.exists()) {
+    // log.info("Create New log4j2 file");
+    // InputStream inputStream = BanksConfig.class.getClassLoader().getResourceAsStream("log4j2.xml");
+    // FileOutputStream outputStream = new FileOutputStream(logConfigFile);
+    //
+    // int read = 0;
+    // byte[] bytes = new byte[1024];
+    //
+    // while ((read = inputStream.read(bytes)) != -1) {
+    // outputStream.write(bytes, 0, read);
+    // }
+    // }
+    // URI source = logConfigFile.toURI();
+    // Configurator.initialize("contextLog4J", null, source);
+    // } catch (Exception e) {
+    // log.fatal("ERROR", e);
+    // }
+    // }
 }

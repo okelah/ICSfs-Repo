@@ -52,7 +52,7 @@ public class PdfNotesVBean extends Applet implements ActionListener {
     private String userLanguage;
 
     private Manager manager = null;
-    private String version = "29-09-14-11,05";
+    private String version = "29-09-14-13,55";
 
     public void addText(String value) {
         sb.append(value);
@@ -130,14 +130,14 @@ public class PdfNotesVBean extends Applet implements ActionListener {
      */
     public PdfNotesVBean() {
         System.out.println("PdfNotesVBean() ... init version:" + version);
-        // BanksConfig.loadLog4jConfiguration();
         try {
+            // BanksConfig.loadLog4jConfiguration();
             BanksConfig.loadConfiguration();
             Configuration.setLogLevel(java.util.logging.Level.parse(BanksConfig.getInstance().getString(
-                    "morena.log.level")));
+                "morena.log.level")));
             @SuppressWarnings("unchecked")
             ArrayList<String> deviceTypes = (ArrayList<String>) BanksConfig.getInstance().getProperty(
-                    "morena.device.types");
+                "morena.device.types");
             for (String deviceType : deviceTypes) {
                 Configuration.addDeviceType(deviceType, true);
             }
@@ -146,7 +146,7 @@ public class PdfNotesVBean extends Applet implements ActionListener {
             setLayout(new BorderLayout());
             Locale.setDefault(new Locale("en"));
             // uncomment this for testing only
-            // showPDF("MODE=edit,PRINT=1,STAMP=1,SIGN=1,USER=test user name, LANG=ar, current_date=01/02/2012");
+            showPDF("MODE=edit,PRINT=1,STAMP=1,SIGN=1,USER=test user name, LANG=ar, current_date=01/02/2012");
         } catch (Exception e) {
             e.printStackTrace();
         }
