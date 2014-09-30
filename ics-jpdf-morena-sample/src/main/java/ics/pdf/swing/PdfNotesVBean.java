@@ -52,7 +52,7 @@ public class PdfNotesVBean extends Applet implements ActionListener {
     private String userLanguage;
 
     private Manager manager = null;
-    private String version = "29-09-14-13,55";
+    private String version = "ICSfs-jPDFNotes 1.2.0";
 
     public void addText(String value) {
         sb.append(value);
@@ -108,7 +108,9 @@ public class PdfNotesVBean extends Applet implements ActionListener {
             storeSave = b64en.encodeBuffer(baos.toByteArray());
             position = 0;
         } catch (IOException e) {
+            e.printStackTrace();
         } catch (PDFException e) {
+            e.printStackTrace();
         }
         return "" + storeSave.length();
     }
@@ -131,7 +133,6 @@ public class PdfNotesVBean extends Applet implements ActionListener {
     public PdfNotesVBean() {
         System.out.println("PdfNotesVBean() ... init version:" + version);
         try {
-            // BanksConfig.loadLog4jConfiguration();
             BanksConfig.loadConfiguration();
             Configuration.setLogLevel(java.util.logging.Level.parse(BanksConfig.getInstance().getString(
                 "morena.log.level")));
@@ -146,7 +147,7 @@ public class PdfNotesVBean extends Applet implements ActionListener {
             setLayout(new BorderLayout());
             Locale.setDefault(new Locale("en"));
             // uncomment this for testing only
-            showPDF("MODE=edit,PRINT=1,STAMP=1,SIGN=1,USER=test user name, LANG=ar, current_date=01/02/2012");
+            // showPDF("MODE=edit,PRINT=1,STAMP=1,SIGN=1,USER=test user name, LANG=ar, current_date=01/02/2012");
         } catch (Exception e) {
             e.printStackTrace();
         }

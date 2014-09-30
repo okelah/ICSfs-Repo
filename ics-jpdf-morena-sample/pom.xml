@@ -3,10 +3,27 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ics-pdf</groupId>
 	<artifactId>ics-jpdf-morena-sample</artifactId>
-	<version>1.0.0</version>
+	<version>1.2.0</version>
 	<packaging>jar</packaging>
 
-	<name>ICS pdf samples based on jPDFNotesSamples</name>
+	<name>ICSfs-jPDFNotes Project supports Morena Scanner Drivers</name>
+	<organization>
+		<name>ICSfs</name>
+		<url>www.icsfs.com</url>
+	</organization>
+	<developers>
+		<developer>
+			<id>ibrahim.sawalha</id>
+			<name>Ibrahim Sawalha</name>
+			<email>ibrahim.sawalha@icsfs.com</email>
+			<organization>ICSfs</organization>
+			<organizationUrl>http://www.icsfs.com</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+		</developer>
+	</developers>
 
 	<properties>
 		<jdk.version>1.6</jdk.version>
@@ -21,11 +38,6 @@
 			<version>3.8.1</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- dependency> <groupId>commons-io</groupId> <artifactId>commons-io</artifactId> 
-			<version>2.4</version> </dependency> <dependency> <groupId>javax.servlet</groupId> 
-			<artifactId>servlet-api</artifactId> <version>2.5</version> </dependency> 
-			<dependency> <groupId>commons-fileupload</groupId> <artifactId>commons-fileupload</artifactId> 
-			<version>1.2</version> </dependency -->
 		<dependency>
 			<groupId>oracle.forms</groupId>
 			<artifactId>frmall</artifactId>
@@ -36,25 +48,21 @@
 			<artifactId>jpdfnotes</artifactId>
 			<version>1</version>
 		</dependency>
-
 		<dependency>
 			<groupId>morena</groupId>
 			<artifactId>morena-license</artifactId>
 			<version>1</version>
 		</dependency>
-
 		<dependency>
 			<groupId>morena</groupId>
 			<artifactId>morena-osx</artifactId>
 			<version>7</version>
 		</dependency>
-
 		<dependency>
 			<groupId>morena</groupId>
 			<artifactId>morena-win</artifactId>
 			<version>7</version>
 		</dependency>
-
 		<dependency>
 			<groupId>morena</groupId>
 			<artifactId>morena</artifactId>
@@ -76,11 +84,6 @@
 			<artifactId>bcprovider</artifactId>
 			<version>1</version>
 		</dependency>
-		<!-- dependency> <groupId>org.bouncycastle</groupId> <artifactId>bcpkix-jdk15on</artifactId> 
-			<version>1.51</version> </dependency> <dependency> <groupId>org.bouncycastle</groupId> 
-			<artifactId>bcprov-jdk15on</artifactId> <version>1.51</version> </dependency> 
-			<dependency> <groupId>com.google.code.jscep</groupId> <artifactId>jscep</artifactId> 
-			<version>2.0</version> </dependency -->
 
 		<dependency>
 			<groupId>cmaps</groupId>
@@ -102,30 +105,16 @@
 			<artifactId>imageio</artifactId>
 			<version>1</version>
 		</dependency>
-
 		<dependency>
 			<groupId>javax.media.jai</groupId>
 			<artifactId>com.springsource.javax.media.jai.core</artifactId>
 			<version>1.1.3</version>
 		</dependency>
-
 		<dependency>
 			<groupId>commons-configuration</groupId>
 			<artifactId>commons-configuration</artifactId>
 			<version>1.10</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<version>2.0.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>2.0.2</version>
-		</dependency>
-
 	</dependencies>
 
 	<profiles>
@@ -145,6 +134,7 @@
 					<plugin>
 						<artifactId>maven-assembly-plugin</artifactId>
 						<configuration>
+							<finalName>ICSfs-jPDFNotes-${version}</finalName>
 							<archive>
 								<manifest>
 									<addClasspath>false</addClasspath>
@@ -249,11 +239,6 @@
 			</build>
 		</profile>
 	</profiles>
-
-	<organization>
-		<name>ICSfs</name>
-		<url>www.icsfs.com</url>
-	</organization>
 
 	<repositories>
 		<repository>
